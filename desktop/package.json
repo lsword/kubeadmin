@@ -1,0 +1,40 @@
+{
+  "name": "kubeadmin",
+  "version": "1.0.0",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "ELECTRON_DEV=1 electron electron/main.js",
+    "dist": "electron-builder",
+    "pack:mac": "electron-builder -m --arm64 -p never",
+    "postinstall": "install-app-deps"
+  },
+  "devDependencies": {
+    "electron": "32.1.2",
+    "electron-builder": "25.0.5"
+  },
+  "build": {
+    "appId": "com.lsword.kubeadmin",
+    "asar": false,
+    "files": [
+      "electron/main.js",
+      "!../kubeadmin.db"
+    ],
+    "extraResources": [
+      {
+        "from": "../frontend/dist",
+        "to": "frontend"
+      },
+      {
+        "from": "../backend",
+        "to": "backend"
+      }
+    ],
+    "directories": {
+      "buildResources": "build"
+    },
+    "electronDownload": {
+      "cache": "./.electron-cache",
+      "isVerifyChecksum": false
+    }
+  }
+}
