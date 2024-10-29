@@ -1,5 +1,6 @@
 dist
 node_modules
 kubeadmin.db
-static
+backend/static
+backend/tmp
 .electron-cache
