@@ -53,3 +53,40 @@ exports.getHelmApps = async (ctx) => {
   }
 
 };
+
+exports.getHelmApp = async (ctx) => {
+  const { clusterId, namespace, appname } = ctx.params;
+}
+
+exports.postHelmApp = async (ctx) => {
+  var reqbody = ctx.request.body;
+  const { appname, chartname, chartversion, chartrepo, clusterid, namespace, values } = ctx.request.body;
+
+  try {
+    const helmService = new HelmService();
+    const installResult = await helmService.installApp(appname, clusterid, namespace, chartname, chartversion, chartrepo, values);
+    if (installResult.status === 0) {
+      ctx.body = {
+        status: 200,
+        msg: 'App installed successfully.',
+        code: 20000,
+        data: "",
+      };      
+    } else {
+      ctx.body = {
+        status: 500,
+        msg: 'App installed failed.',
+        code: 50000,
+        data: installResult.msg,
+      };      
+    }
+} catch (error) {
+    ctx.status = 500;
+    ctx.body = {
+      status: 500,
+      msg: 'Failed to retrieve Helm releases.',
+      code: 1019,
+      data: { error: error }
+    };
+  }
+};

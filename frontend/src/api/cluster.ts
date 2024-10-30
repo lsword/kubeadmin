@@ -94,6 +94,26 @@ export const getAppStoreAppInfo = async (appstoreID: string, chartName: string ,
   return axios.get(`/api/appstore/app/${appstoreID}/${chartName}/${chartVersion}`);
 };
 
+export const postAppInstall = async (appname: string, chartname: string, chartversion: string, chartrepo: string, clusterid: string, namespace: string, values: string) => {
+  return axios.post(
+    `/api/helm/app`,
+    JSON.stringify({
+      appname: `${appname}`,
+      chartname: `${chartname}`,
+      chartversion: `${chartversion}`,
+      chartrepo: `${chartrepo}`,
+      clusterid: `${clusterid}`,
+      namespace: `${namespace}`,
+      values: `${values}`,
+    }),
+    {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+}
+
 export function getNodeList() {
   return null;
 }
