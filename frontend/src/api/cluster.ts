@@ -10,6 +10,10 @@ export interface Cluster {
   status: string;
 }
 
+export interface HttpResponse {
+  [x: string]: any;
+};
+
 export interface K8sPod {
   [x: string]: any;
 };
@@ -91,7 +95,8 @@ export const getAppStoreAppInfo = async (appstoreID: string, chartName: string ,
 };
 
 export const getHelmAppList = async (clusterID: string, namespace: string) => {
-  return axios.get(`/api/helm/apps/${clusterID}/${namespace}`);
+  // return axios.get(`/api/helm/apps/${clusterID}/${namespace}`);
+  return axios.get<HttpResponse>(`/api/helm/apps/${clusterID}/${namespace}`);
 };
 
 export const getHelmApp = async (appName: string, clusterID: string, namespace: string) => {

@@ -8,11 +8,10 @@ exports.getHelmApps = async (ctx) => {
   const { clusterId, nameSpace } = ctx.params;
 
   if (!clusterId || !nameSpace) {
-    ctx.status = 400;
+    ctx.status = 200;
     ctx.body = {
-      status: 400,
+      code: 20001,
       msg: 'Namespace is required.',
-      code: 1018,
       data: null
     };
     return;
@@ -22,19 +21,16 @@ exports.getHelmApps = async (ctx) => {
   const listResult = await helmService.listApps(clusterId, nameSpace);
   if (listResult.status === 0) {
     ctx.body = {
-      status: 200,
-      msg: 'Helm releases retrieved successfully.',
       code: 20000,
+      msg: 'Helm releases retrieved successfully.',
       data: listResult.data,
     };
   }
   else {
-    ctx.status = 500;
     ctx.body = {
-      status: 500,
+      code: 20003,
       msg: listResult.msg,
-      code: 1019,
-      data: listResult.data,
+      data: null,
     };  
   }
 };
@@ -52,25 +48,22 @@ exports.postHelmApp = async (ctx) => {
     const installResult = await helmService.installApp(appname, clusterid, namespace, chartname, chartversion, chartrepo, values);
     if (installResult.status === 0) {
       ctx.body = {
-        status: 200,
-        msg: 'App installed successfully.',
         code: 20000,
-        data: "",
+        msg: 'App installed successfully.',
+        data: null,
       };      
     } else {
       ctx.body = {
-        status: 500,
-        msg: 'App installed failed.',
         code: 50000,
+        msg: 'App installed failed.',
         data: installResult.msg,
       };      
     }
-} catch (error) {
+  } catch (error) {
     ctx.status = 500;
     ctx.body = {
-      status: 500,
+      code: 50001,
       msg: 'Failed to retrieve Helm releases.',
-      code: 1019,
       data: { error: error }
     };
   }
@@ -80,11 +73,10 @@ exports.deleteHelmApp = async (ctx) => {
   const { clusterId, nameSpace, appName } = ctx.params;
 
   if (!clusterId || !nameSpace || !appName) {
-    ctx.status = 400;
+    ctx.status = 200;
     ctx.body = {
-      status: 400,
+      code: 20001,
       msg: 'nameSpace and appName are required.',
-      code: 1018,
       data: null
     };
     return;
@@ -95,25 +87,22 @@ exports.deleteHelmApp = async (ctx) => {
     const deleteResult = await helmService.deleteApp(appName, clusterId, nameSpace);
     if (deleteResult.status === 0) {
       ctx.body = {
-        status: 200,
-        msg: 'App deleted successfully.',
         code: 20000,
+        msg: 'App deleted successfully.',
         data: "",
       };      
     } else {
       ctx.body = {
-        status: 500,
-        msg: 'App deleted failed.',
         code: 50000,
+        msg: 'App deleted failed.',
         data: deleteResult.msg,
       };      
     }
   } catch (error) {
     ctx.status = 500;
     ctx.body = {
-      status: 500,
+      code: 50001,
       msg: 'Failed to retrieve Helm releases.',
-      code: 1019,
       data: { error: error }
     };
   }

@@ -25,16 +25,16 @@
         </a-table>
       </a-card>
     </div>
+    <a-modal v-model:visible="deleteConfirmModalVisible" @ok="handleDeleteOk" @cancel="handleDeleteCancel">
+      <template #title>
+        {{ $t('applist.deletemodal.title') }}
+      </template>
+      <div>{{ $t('applist.deletemodal.confirmInfo') }}</div>
+      <div>{{ $t('applist.deletemodal.appname') }}: {{ curAppName }}</div>
+      <div>{{ $t('applist.deletemodal.namespace') }}: {{ clusterStore.curNamespace }}</div>
+      <div>{{ $t('applist.deletemodal.cluster') }}: {{ clusterStore.name }}</div>
+    </a-modal>
   </div>
-  <a-modal v-model:visible="deleteConfirmModalVisible" @ok="handleDeleteOk" @cancel="handleDeleteCancel">
-    <template #title>
-      {{ $t('applist.deletemodal.title') }}
-    </template>
-    <div>{{ $t('applist.deletemodal.confirmInfo') }}</div>
-    <div>{{ $t('applist.deletemodal.appname') }}: {{ curAppName }}</div>
-    <div>{{ $t('applist.deletemodal.namespace') }}: {{ clusterStore.curNamespace }}</div>
-    <div>{{ $t('applist.deletemodal.cluster') }}: {{ clusterStore.name }}</div>
-  </a-modal>
 </template>
 
 <script setup lang="ts">
@@ -42,7 +42,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useClusterStore } from '@/store';
-import { getHelmAppList, deleteHelmApp } from '@/api/cluster';
+import { getHelmAppList, deleteHelmApp, HttpResponse } from '@/api/cluster';
 import useLoading from '@/hooks/loading';
 
 import date from '@/utils/date';
@@ -64,7 +64,8 @@ const checkStoreData = () => {
 const fetchHelmApps = async () => {
   checkStoreData();
   try {
-    const result = await getHelmAppList(clusterStore.id!, clusterStore.curNamespace!);
+    const result: HttpResponse = await getHelmAppList(clusterStore.id!, clusterStore.curNamespace!);
+    console.log(result.msg);
     // const currentTime = new Date();
     // const podCreateTime = pod.metadata && pod.metadata.creationTimestamp ? date.formatTimeDiff(new Date(pod.metadata.creationTimestamp),currentTime) : '';
     helmApps.value = result.data;
