@@ -7,4 +7,9 @@ export default {
   'applist.table.appversion': '应用版本',
   'applist.table.operation': '操作',
   'applist.table.operation.delete': '删除',
+  'applist.deletemodal.title': '删除确认',
+  'applist.deletemodal.confirmInfo': '确定要删除这个应用吗？',
+  'applist.deletemodal.appname': '应用名称',
+  'applist.deletemodal.namespace': '命名空间',
+  'applist.deletemodal.cluster': '集群名称',
 };

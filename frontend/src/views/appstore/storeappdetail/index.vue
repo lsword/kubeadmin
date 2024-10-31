@@ -97,7 +97,7 @@ import { ref, reactive, watch, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { Message,Modal } from '@arco-design/web-vue';
 import { useClusterStore } from '@/store';
-import { getAppStoreAppInfo, getAppStoreAppVersions, getAppStore, postAppInstall } from '@/api/cluster';
+import { getAppStoreAppInfo, getAppStoreAppVersions, getAppStore, postHelmAppInstall } from '@/api/cluster';
 import ConfigEditor from '@/components/configeditor/index.vue';
 import MarkDown from '@/components/markdown/index.vue'
 import useLoading from '@/hooks/loading';
@@ -138,7 +138,7 @@ const handleInstallOk = async () => {
   installModalVisible.value = false;
   console.log("xxx");
   // appname: string, chartname: string, chartversion: string, chartrepo: string, namespace: string, values: string
-  const installResult = await postAppInstall(installForm.name, chartname.value, curVersion.value, storeid.value, clusterStore.id!, installForm.namespace, installValues.value);
+  const installResult = await postHelmAppInstall(installForm.name, chartname.value, curVersion.value, storeid.value, clusterStore.id!, installForm.namespace, installValues.value);
   console.log(installResult);
   if (installResult.status === 200) {
     Message.success("安装成功！")
@@ -150,7 +150,6 @@ const handleInstallOk = async () => {
       maskClosable: false,
     });
   }
-  
 }
 
 const handleInstallCancel = () => {

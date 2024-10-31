@@ -5,9 +5,9 @@ const fs = require('fs').promises;
 const path = require('path');
 
 exports.getHelmApps = async (ctx) => {
-  const { clusterId, namespace } = ctx.params;
+  const { clusterId, nameSpace } = ctx.params;
 
-  if (!clusterId || !namespace) {
+  if (!clusterId || !nameSpace) {
     ctx.status = 400;
     ctx.body = {
       status: 400,
@@ -18,44 +18,29 @@ exports.getHelmApps = async (ctx) => {
     return;
   }
 
-  try {
-    const cluster = await getClusterById(clusterId);
-    if (!cluster) {
-      ctx.status = 404;
-      ctx.body = {
-        status: 404,
-        msg: 'Cluster not found.',
-        code: 1013,
-        data: null
-      };
-      return;
-    }
-
-    const configFilePath = path.resolve(__dirname, '../tmp', clusterId);
-    await fs.writeFile(configFilePath, cluster.config);
-
-    const helmService = new HelmService();
-    const releases = await helmService.listApps(configFilePath, namespace);
+  const helmService = new HelmService();
+  const listResult = await helmService.listApps(clusterId, nameSpace);
+  if (listResult.status === 0) {
     ctx.body = {
       status: 200,
       msg: 'Helm releases retrieved successfully.',
       code: 20000,
-      data: releases
+      data: listResult.data,
     };
-  } catch (error) {
+  }
+  else {
     ctx.status = 500;
     ctx.body = {
       status: 500,
-      msg: 'Failed to retrieve Helm releases.',
+      msg: listResult.msg,
       code: 1019,
-      data: { error: error }
-    };
+      data: listResult.data,
+    };  
   }
-
 };
 
 exports.getHelmApp = async (ctx) => {
-  const { clusterId, namespace, appname } = ctx.params;
+  const { clusterId, nameSpace, appName } = ctx.params;
 }
 
 exports.postHelmApp = async (ctx) => {
@@ -81,6 +66,49 @@ exports.postHelmApp = async (ctx) => {
       };      
     }
 } catch (error) {
+    ctx.status = 500;
+    ctx.body = {
+      status: 500,
+      msg: 'Failed to retrieve Helm releases.',
+      code: 1019,
+      data: { error: error }
+    };
+  }
+};
+
+exports.deleteHelmApp = async (ctx) => {
+  const { clusterId, nameSpace, appName } = ctx.params;
+
+  if (!clusterId || !nameSpace || !appName) {
+    ctx.status = 400;
+    ctx.body = {
+      status: 400,
+      msg: 'nameSpace and appName are required.',
+      code: 1018,
+      data: null
+    };
+    return;
+  }
+
+  try {
+    const helmService = new HelmService();
+    const deleteResult = await helmService.deleteApp(appName, clusterId, nameSpace);
+    if (deleteResult.status === 0) {
+      ctx.body = {
+        status: 200,
+        msg: 'App deleted successfully.',
+        code: 20000,
+        data: "",
+      };      
+    } else {
+      ctx.body = {
+        status: 500,
+        msg: 'App deleted failed.',
+        code: 50000,
+        data: deleteResult.msg,
+      };      
+    }
+  } catch (error) {
     ctx.status = 500;
     ctx.body = {
       status: 500,

@@ -70,10 +70,6 @@ export function getPodDetail(clusterID: string, nameSpace: string, podName: stri
   );
 };
 
-export const getHelmAppList = async (clusterID: string, namespace: string) => {
-  return axios.get(`/api/helm/apps/${clusterID}/${namespace}`);
-};
-
 export const getAppStoreList = async () => {
   return axios.get(`/api/appstore/stores`);
 };
@@ -94,7 +90,19 @@ export const getAppStoreAppInfo = async (appstoreID: string, chartName: string ,
   return axios.get(`/api/appstore/app/${appstoreID}/${chartName}/${chartVersion}`);
 };
 
-export const postAppInstall = async (appname: string, chartname: string, chartversion: string, chartrepo: string, clusterid: string, namespace: string, values: string) => {
+export const getHelmAppList = async (clusterID: string, namespace: string) => {
+  return axios.get(`/api/helm/apps/${clusterID}/${namespace}`);
+};
+
+export const getHelmApp = async (appName: string, clusterID: string, namespace: string) => {
+  return axios.get(`/api/helm/app/${clusterID}/${namespace}/${appName}`);
+};
+
+export const deleteHelmApp = async (appName: string, clusterID: string, namespace: string) => {
+  return axios.delete(`/api/helm/app/${clusterID}/${namespace}/${appName}`);
+};
+
+export const postHelmAppInstall = async (appname: string, chartname: string, chartversion: string, chartrepo: string, clusterid: string, namespace: string, values: string) => {
   return axios.post(
     `/api/helm/app`,
     JSON.stringify({

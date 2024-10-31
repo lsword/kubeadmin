@@ -26,15 +26,23 @@
       </a-card>
     </div>
   </div>
+  <a-modal v-model:visible="deleteConfirmModalVisible" @ok="handleDeleteOk" @cancel="handleDeleteCancel">
+    <template #title>
+      {{ $t('applist.deletemodal.title') }}
+    </template>
+    <div>{{ $t('applist.deletemodal.confirmInfo') }}</div>
+    <div>{{ $t('applist.deletemodal.appname') }}: {{ curAppName }}</div>
+    <div>{{ $t('applist.deletemodal.namespace') }}: {{ clusterStore.curNamespace }}</div>
+    <div>{{ $t('applist.deletemodal.cluster') }}: {{ clusterStore.name }}</div>
+  </a-modal>
 </template>
 
 <script setup lang="ts">
 
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { useI18n } from 'vue-i18n';
 import { useClusterStore } from '@/store';
-import { getHelmAppList } from '@/api/cluster';
+import { getHelmAppList, deleteHelmApp } from '@/api/cluster';
 import useLoading from '@/hooks/loading';
 
 import date from '@/utils/date';
@@ -42,6 +50,8 @@ import date from '@/utils/date';
 const router = useRouter();
 const { loading, setLoading } = useLoading();
 const clusterStore = useClusterStore();
+const deleteConfirmModalVisible = ref(false);
+const curAppName = ref("");
 
 const helmApps = ref();
 
@@ -50,13 +60,6 @@ const checkStoreData = () => {
     router.push("/");
   }
 }
-
-const handleViewApp = (record: any) => {
-  // router.push(`/workload/pod/${record.name}`);
-};
-
-const handleDelete = (record:any) => {
-};
 
 const fetchHelmApps = async () => {
   checkStoreData();
@@ -70,6 +73,24 @@ const fetchHelmApps = async () => {
     console.error('Failed to fetch Helm releases:', error);
   }
 };
+
+const handleViewApp = (record: any) => {
+  // router.push(`/workload/pod/${record.name}`);
+};
+
+const handleDelete = async (record:any) => {
+  curAppName.value = record.name;
+  deleteConfirmModalVisible.value = true;
+};
+
+const handleDeleteOk = async () => {
+  const result = await deleteHelmApp(curAppName.value, clusterStore.id!, clusterStore.curNamespace!);
+  await fetchHelmApps();
+}
+
+const handleDeleteCancel = async () => {
+  deleteConfirmModalVisible.value = false;
+}
 
 onMounted(() => {
   fetchHelmApps();

@@ -7,4 +7,9 @@ export default {
   'applist.table.appversion': 'AppVersion',
   'applist.table.operation': 'Operation',
   'applist.table.operation.delete': 'Delete',
+  'applist.deletemodal.title': 'Delete Confirm',
+  'applist.deletemodal.confirmInfo': 'Are you sure you want to delete this app?',
+  'applist.deletemodal.appname': 'AppName',
+  'applist.deletemodal.namespace': 'NameSpace',
+  'applist.deletemodal.cluster': 'Cluster',
 };

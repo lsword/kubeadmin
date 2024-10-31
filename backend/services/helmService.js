@@ -3,34 +3,61 @@ const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const path = require('path');
 const { getClusterById, getAppStoreById } = require('../db');
+const { getClusterConfigFile } = require('../utils/k8sConfig');
 const AppStoreService = require('./appStoreService');
 
 class HelmService {
-  async listApps(configFilePath, nameSpace) {
+  constructor(storeInfo) {
+    this.helmPath = path.resolve(__dirname, '../bin/helm');
+  }
+  
+  async listApps(clusterId, nameSpace) {
+    const result = {};
+    result.status = -1;
+    result.data = [];
+
+    const k8sConfigFilePath = await getClusterConfigFile(clusterId);
+    if (!k8sConfigFilePath) {
+      console.log("Can not find cluster");
+      result.status = -1;
+      result.msg = "Can not find cluster";
+      result.data = [];
+      return result;
+    }
+
     try {
-      const helmPath = path.resolve(__dirname, '../bin/helm');
-      const { stdout, stderr } = await exec(`${helmPath} list --kubeconfig ${configFilePath} -n ${nameSpace} -o json`);
+      const { stdout, stderr } = await exec(`${this.helmPath} list --kubeconfig ${k8sConfigFilePath} -n ${nameSpace} -o json`);
       const apps = JSON.parse(stdout);
-      return apps;
+      result.status = 0;
+      result.msg = "ok";
+      result.data = apps;
+      return result;
     } catch(error){
       console.log(error)
-      return [];
+      result.status = -1;
+      result.msg = "Can not list helm app of cluster";
+      result.data = [];
+      return result;
     }
   }
 
   async installApp(appName, clusterId, nameSpace, chartName, chartVersion, chartRepo, values) {
     const result = {};
+    result.status = -1;
+
     const helmPath = path.resolve(__dirname, '../bin/helm');
     const fsPromises = require('fs').promises;
 
-    // Get k8s config
-    const clusterInfo = await getClusterById(clusterId);
-
-    if (!clusterInfo) {
+    // Getcluster config file
+    const k8sConfigFilePath = await getClusterConfigFile(clusterId);
+    if (!k8sConfigFilePath) {
       result.status = -1;
       result.msg = "Can not find cluster";
       return result;
     }
+
+    // Check app name
+
     // Get appstore info
     const storeInfo = await getAppStoreById(chartRepo);
     if (!storeInfo) {
@@ -50,10 +77,7 @@ class HelmService {
       return result;
     }
 
-    // Write cluster config file and app config file
-    const k8sConfigFilePath = path.resolve(packagePath, chartName, 'k8s.yaml');
-    await fsPromises.writeFile(k8sConfigFilePath, clusterInfo.config, { mode: 0o600 });
-
+    // Write app config file
     const valuesFilePath = path.resolve(packagePath, chartName, 'v.yaml');
     await fsPromises.writeFile(valuesFilePath, values);
 
@@ -65,6 +89,7 @@ class HelmService {
       result.msg = dryRunError;
       return result;
     }
+
     // Install app
     var installCommand = `${helmPath} install ${appName} . -n ${nameSpace} -f ${valuesFilePath} --kubeconfig ${k8sConfigFilePath}`;
     const { stdout: installOutput, stderr: installError } = await exec(installCommand, { maxBuffer: 8000 * 1024, cwd: `${packagePath}/${chartName}` });
@@ -74,11 +99,36 @@ class HelmService {
       return result;
     }
 
+    // Clean tmp dir
+    await fsPromises.rm( packagePath, { recursive: true } );
+
+    // Return ok
     result.status = 0;
     result.msg = "ok";
     return result;
-  // console.log(dryRunCommand);
-    // console.log(dryRunOut)
+  }
+
+  async deleteApp(appName, clusterId, nameSpace) {
+    const result = {};
+    result.status = -1;
+    result.data = null;
+
+    const k8sConfigFilePath = await getClusterConfigFile(clusterId);
+    if (!k8sConfigFilePath) {
+      result.msg = "Can not find cluster";
+      console.log(result.msg);
+      return result;
+    }
+
+    try {
+      const { stdout, stderr } = await exec(`${this.helmPath} delete --kubeconfig ${k8sConfigFilePath} -n ${nameSpace} ${appName}`);
+      result.status = 0;
+      result.msg = `Delete helm app(${appName}) in namespace(${nameSpace}) of cluster(${clusterId}) successfully`;
+      result.data = null;
+    } catch(error){
+      result.msg = `Can not delete helm app(${appName}) in namespace(${nameSpace}) of cluster(${clusterId})`;
+    }
+    return result;
   }
 }
 
