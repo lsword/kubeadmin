@@ -11,7 +11,7 @@ exports.getHelmApps = async (ctx) => {
     ctx.status = 200;
     ctx.body = {
       code: 20001,
-      msg: 'Namespace is required.',
+      msg: 'ClusterId and Namespace are required.',
       data: null
     };
     return;
@@ -37,6 +37,33 @@ exports.getHelmApps = async (ctx) => {
 
 exports.getHelmApp = async (ctx) => {
   const { clusterId, nameSpace, appName } = ctx.params;
+
+  if (!clusterId || !nameSpace || !appName) {
+    ctx.status = 200;
+    ctx.body = {
+      code: 20001,
+      msg: 'ClusterId, Namespace and AppName are required.',
+      data: null
+    };
+    return;
+  }
+
+  const helmService = new HelmService();
+  const listResult = await helmService.getApp(clusterId, nameSpace, appName);
+  if (listResult.status === 0) {
+    ctx.body = {
+      code: 20000,
+      msg: 'Helm releases retrieved successfully.',
+      data: listResult.data,
+    };
+  }
+  else {
+    ctx.body = {
+      code: 20003,
+      msg: listResult.msg,
+      data: null,
+    };  
+  }
 }
 
 exports.postHelmApp = async (ctx) => {

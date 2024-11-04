@@ -10,6 +10,8 @@ import localePod from '@/views/workload/pod/locale/en-US';
 
 import localeApplist from '@/views/helm/applist/locale/en-US';
 
+import localeApp from '@/views/helm/app/locale/en-US';
+
 import localeStorelist from '@/views/appstore/storelist/locale/en-US';
 
 import localeStoreAppList from '@/views/appstore/storeapplist/locale/en-US';
@@ -44,6 +46,7 @@ export default {
   'menu.workload.deploymentlist': 'Deployments',
   'menu.appstore': 'AppStore',
   'menu.helm.applist': 'MyApps',
+  'menu.helm.app': "MyApp",
   ...localeSettings,
   ...localeMessageBox,
   ...localeLogin,
@@ -52,6 +55,7 @@ export default {
   ...localePodlist,
   ...localePod,
   ...localeApplist,
+  ...localeApp,
   ...localeStorelist,
   ...localeStoreAppList,
   ...localeStoreAppDetail,

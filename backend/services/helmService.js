@@ -2,6 +2,7 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const path = require('path');
+const YAML = require('yaml');
 const { getClusterById, getAppStoreById } = require('../db');
 const { getClusterConfigFile } = require('../utils/k8sConfig');
 const AppStoreService = require('./appStoreService');
@@ -9,20 +10,23 @@ const AppStoreService = require('./appStoreService');
 class HelmService {
   constructor(storeInfo) {
     this.helmPath = path.resolve(__dirname, '../bin/helm');
+    this.yqPath = path.resolve(__dirname, '../bin/yq');
   }
   
+  async handleError(result, errorMsg, error) {
+    console.error(`${errorMsg}:`, error);
+    result.status = -1;
+    result.msg = errorMsg;
+    result.data = null;
+    return result;
+  }
+
   async listApps(clusterId, nameSpace) {
     const result = {};
-    result.status = -1;
-    result.data = [];
 
     const k8sConfigFilePath = await getClusterConfigFile(clusterId);
     if (!k8sConfigFilePath) {
-      console.log("Can not find cluster");
-      result.status = -1;
-      result.msg = "Can not find cluster";
-      result.data = [];
-      return result;
+      return this.handleError(result, "Can not find cluster");
     }
 
     try {
@@ -33,11 +37,56 @@ class HelmService {
       result.data = apps;
       return result;
     } catch(error){
-      console.log(error)
-      result.status = -1;
-      result.msg = "Can not list helm app of cluster";
-      result.data = [];
+      return this.handleError(result, "Can not list helm app of cluster");
+    }
+  }
+
+  async getApp(clusterId, nameSpace, appName) {
+    const result = {};
+    result.status = -1;
+
+    const k8sConfigFilePath = await getClusterConfigFile(clusterId);
+    if (!k8sConfigFilePath) {
+      return this.handleError(result, "Can not find cluster");
+    }
+
+    const resources = [];
+    try {
+      // const { stdout, stderr } = await exec(`${this.helmPath} get manifest ${appName} --kubeconfig ${k8sConfigFilePath} -n ${nameSpace} | ${this.yqPath} ea "[.]" -o=json`);
+      // const manifests = JSON.parse(stdout).filter(item => item !== null);
+      const { stdout } = await exec(`${this.helmPath} get manifest ${appName} --kubeconfig ${k8sConfigFilePath} -n ${nameSpace}`);
+      const manifests = YAML.parseAllDocuments(stdout).map(doc => doc.toJSON()).filter(item => item !== null);
+  
+      for (const item of manifests) {
+        if (item === null) continue;
+        console.log(item.kind);
+        if (item.kind === "Ingress") {
+          const resource = {};
+          resource.id = nameSpace + ":" + item.kind + ":" + item.metadata.name;
+          resource.kind = item.kind;
+          // resource.info = await serviceK8s.getIngressByName(ns, item.metadata.name);
+          resource.upstreams = [];
+          if (item.spec.rules) {
+            for (const rule of item.spec.rules) {
+              for (const path of rule.http.paths) {
+                var upstream = {};
+                if (path.backend.service && path.backend.service.name)
+                  upstream.id = nameSpace + ":Service:" + path.backend.service.name;
+                if (path.backend.serviceName)
+                  upstream.id = nameSpace + ":Service:" + path.backend.serviceName;
+                resource.upstreams.push(upstream);
+              }
+            }
+          }
+          resources.push(resource);
+        }
+      }
+      result.status = 0;
+      result.msg = "ok";
+      result.data = resources;
       return result;
+    } catch(error){
+      return this.handleError(result, "Can not list helm app of cluster");
     }
   }
 
@@ -51,9 +100,7 @@ class HelmService {
     // Getcluster config file
     const k8sConfigFilePath = await getClusterConfigFile(clusterId);
     if (!k8sConfigFilePath) {
-      result.status = -1;
-      result.msg = "Can not find cluster";
-      return result;
+      return this.handleError(result, "Can not find cluster");
     }
 
     // Check app name
@@ -72,9 +119,7 @@ class HelmService {
     const packagePath = await appStoreService.getAppPackagePath(chartName, chartVersion);
 
     if (!packagePath)  {
-      result.status = -1;
-      result.msg = "Can not get chart package";
-      return result;
+      return this.handleError(result, "Can not get chart package");
     }
 
     // Write app config file
@@ -85,18 +130,14 @@ class HelmService {
     var dryRunCommand = `${helmPath} install ${appName} . -n ${nameSpace} -f ${valuesFilePath} --kubeconfig ${k8sConfigFilePath} --dry-run`;
     const { stdout: dryRunOut, stderr: dryRunError } = await exec(dryRunCommand, { maxBuffer: 8000 * 1024, cwd: `${packagePath}/${chartName}` });
     if (dryRunError) {
-      result.status = -1;
-      result.msg = dryRunError;
-      return result;
+      return this.handleError(result, dryRunError);
     }
 
     // Install app
     var installCommand = `${helmPath} install ${appName} . -n ${nameSpace} -f ${valuesFilePath} --kubeconfig ${k8sConfigFilePath}`;
     const { stdout: installOutput, stderr: installError } = await exec(installCommand, { maxBuffer: 8000 * 1024, cwd: `${packagePath}/${chartName}` });
     if (installError) {
-      result.status = -1;
-      result.msg = installError;
-      return result;
+      return this.handleError(result, installError);
     }
 
     // Clean tmp dir
@@ -115,9 +156,7 @@ class HelmService {
 
     const k8sConfigFilePath = await getClusterConfigFile(clusterId);
     if (!k8sConfigFilePath) {
-      result.msg = "Can not find cluster";
-      console.log(result.msg);
-      return result;
+      return this.handleError(result, "Can not find cluster");
     }
 
     try {
@@ -126,7 +165,7 @@ class HelmService {
       result.msg = `Delete helm app(${appName}) in namespace(${nameSpace}) of cluster(${clusterId}) successfully`;
       result.data = null;
     } catch(error){
-      result.msg = `Can not delete helm app(${appName}) in namespace(${nameSpace}) of cluster(${clusterId})`;
+      return this.handleError(result, `Can not delete helm app(${appName}) in namespace(${nameSpace}) of cluster(${clusterId})`);
     }
     return result;
   }

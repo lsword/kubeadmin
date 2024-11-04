@@ -131,12 +131,13 @@ defaultIcon.value = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZ
 
 const handleInstall = () => {
   installModalVisible.value = true;
-  console.log("xxx");
 }
 
 const handleInstallOk = async () => {
   installModalVisible.value = false;
-  console.log("xxx");
+  
+  // todo: check install argument
+  // todo: i18n
   // appname: string, chartname: string, chartversion: string, chartrepo: string, namespace: string, values: string
   const installResult:HttpResponse = await postHelmAppInstall(installForm.name, chartname.value, curVersion.value, storeid.value, clusterStore.id!, installForm.namespace, installValues.value);
   console.log(installResult);

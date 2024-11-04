@@ -69,14 +69,13 @@ const fetchHelmApps = async () => {
     // const currentTime = new Date();
     // const podCreateTime = pod.metadata && pod.metadata.creationTimestamp ? date.formatTimeDiff(new Date(pod.metadata.creationTimestamp),currentTime) : '';
     helmApps.value = result.data;
-    console.log(helmApps.value);
   } catch (error) {
     console.error('Failed to fetch Helm releases:', error);
   }
 };
 
 const handleViewApp = (record: any) => {
-  // router.push(`/workload/pod/${record.name}`);
+  router.push(`/helm/app/${record.name}`);
 };
 
 const handleDelete = async (record:any) => {

@@ -27,6 +27,19 @@ const HELMAPPS: AppRouteRecordRaw = {
         hideInMenu: false,
       },
     },
+    {
+      path: 'app/:name',
+      name: 'helm.app',
+      component: () => import('@/views/helm/app/index.vue'),
+      meta: {
+        locale: 'menu.helm.app',
+        requiresAuth: true,
+        // activeMenu: 'helm',
+        roles: ['*'],
+        title: '我的应用',
+        hideInMenu: false,
+      },
+    },
   ],
 };
 
