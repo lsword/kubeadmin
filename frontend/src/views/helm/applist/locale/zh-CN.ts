@@ -1,4 +1,5 @@
 export default {
+  'applist.breadcrumb.applist': '我的应用',
   'applist.table.name': '名称',
   'applist.table.revision': '更新次数',
   'applist.table.updatetime': '上次更新时间',

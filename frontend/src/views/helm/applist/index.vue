@@ -1,5 +1,15 @@
 <template>
   <div class="container">
+    <a-breadcrumb :style="{fontSize: '14px', marginTop: '2px', marginBottom: '8px'}">
+      <a-breadcrumb-item>
+        <icon-list/>
+      </a-breadcrumb-item>
+      <a-breadcrumb>
+        <a-link href='/helm/applist'>
+          {{$t('applist.breadcrumb.applist')}}
+        </a-link>
+      </a-breadcrumb>
+    </a-breadcrumb>
     <div class="layout">
       <a-card style="height: auto;"  id="container">
         <a-table :data="helmApps" :loading="loading">

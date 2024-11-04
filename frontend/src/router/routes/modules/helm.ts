@@ -37,7 +37,7 @@ const HELMAPPS: AppRouteRecordRaw = {
         // activeMenu: 'helm',
         roles: ['*'],
         title: '我的应用',
-        hideInMenu: false,
+        hideInMenu: true,
       },
     },
   ],

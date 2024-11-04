@@ -1,4 +1,5 @@
 export default {
+  'applist.breadcrumb.applist': 'AppList',
   'applist.table.name': 'Name',
   'applist.table.revision': 'Revision',
   'applist.table.updatetime': 'Updated',

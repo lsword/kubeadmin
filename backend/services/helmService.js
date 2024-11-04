@@ -40,8 +40,34 @@ class HelmService {
       return this.handleError(result, "Can not list helm app of cluster");
     }
   }
-
   async getApp(clusterId, nameSpace, appName) {
+    const result = {};
+    result.status = -1;
+
+    const k8sConfigFilePath = await getClusterConfigFile(clusterId);
+    if (!k8sConfigFilePath) {
+      return this.handleError(result, "Can not find cluster");
+    }
+
+    const resources = [];
+    try {
+      const { stdout } = await exec(`${this.helmPath} get manifest ${appName} --kubeconfig ${k8sConfigFilePath} -n ${nameSpace}`);
+      const manifests = YAML.parseAllDocuments(stdout).map(doc => doc.toJSON()).filter(item => item !== null);
+  
+      for (const item of manifests) {
+        if (item === null) continue;
+        resources.push(item);
+      }
+      result.status = 0;
+      result.msg = "ok";
+      result.data = resources;
+      return result;
+    } catch(error){
+      return this.handleError(result, "Can not list helm app of cluster");
+    }
+  }
+
+  async getAppResources(clusterId, nameSpace, appName) {
     const result = {};
     result.status = -1;
 
@@ -59,10 +85,10 @@ class HelmService {
   
       for (const item of manifests) {
         if (item === null) continue;
-        console.log(item.kind);
+        // console.log(item.kind);
+        const resource = {};
         if (item.kind === "Ingress") {
-          const resource = {};
-          resource.id = nameSpace + ":" + item.kind + ":" + item.metadata.name;
+          resource.id = `${nameSpace}:${item.kind}:${item.metadata.name}`;
           resource.kind = item.kind;
           // resource.info = await serviceK8s.getIngressByName(ns, item.metadata.name);
           resource.upstreams = [];
@@ -78,6 +104,66 @@ class HelmService {
               }
             }
           }
+          resources.push(resource);
+        }
+        if (item.kind === "Service") {
+          resource.id = `${nameSpace}:${item.kind}:${item.metadata.name}`;
+          resource.kind = item.kind;
+          // resource.info = await serviceK8s.getServiceByName(ns, item.metadata.name);
+          resource.upstreams = [];
+  
+          var labels = "";
+          if (item.spec.selector && typeof item.spec.selector === 'object') {
+            /*
+            Object.keys(item.spec.selector).forEach((key) => {
+              labels += key + "=" + item.spec.selector[key] + ",";
+            })
+            labels = labels.substring(0, labels.length - 1);
+            var tmppods = await serviceK8s.getPodByLabels(ns, labels);
+            for (tmppod of tmppods) {
+              var upstream = {};
+              upstream.id = ns + ":Pod:" + tmppod.metadata.name;
+              resource.upstreams.push(upstream);
+            }
+              */
+          }
+          resources.push(resource);
+        }
+        if (item.kind === "Deployment" || item.kind === "DaemonSet" || item.kind === "StatefulSet") {
+          resource.id = `${nameSpace}:${item.kind}:${item.metadata.name}`;
+          resource.kind = item.kind;
+          /*
+          if (item.kind === "Deployment")
+            resource.info = await serviceK8s.getDeploymentByName(ns, item.metadata.name);
+          else if (item.kind === "DaemonSet")
+            resource.info = await serviceK8s.getDaemonSetByName(ns, item.metadata.name);
+          else if (item.kind === "StatefulSet")
+            resource.info = await serviceK8s.getStatefulSetByName(ns, item.metadata.name);
+          resource.upstreams = [];
+          var labels = "";
+          if (item.spec.selector && item.spec.selector.matchLabels && typeof item.spec.selector === 'object') {
+            Object.keys(item.spec.selector.matchLabels).forEach((key) => {
+              labels += key + "=" + item.spec.selector.matchLabels[key] + ",";
+            })
+            labels = labels.substring(0, labels.length - 1);
+  
+            var tmppods = await serviceK8s.getPodByLabels(ns, labels);
+            for (tmppod of tmppods) {
+              var upstream = {};
+              upstream.id = ns + ":Pod:" + tmppod.metadata.name;
+              resource.upstreams.push(upstream);
+  
+              var podResource = {};
+              podResource.id = ns + ":Pod:" + tmppod.metadata.name;
+              podResource.kind = "Pod";
+              podResource.info = tmppod;
+              podResource.controller = ns + ":" + item.kind + ":" + item.metadata.name;
+              podResource.upstreams = [];
+              resources.push(podResource);
+            }
+            
+          }
+            */
           resources.push(resource);
         }
       }
