@@ -9,17 +9,18 @@
           {{$t('applist.breadcrumb.applist')}}
         </a-link>
       </a-breadcrumb-item>
-      <a-breadcrumb-item v-if="podName">
-        <a-link :href="'/helm/app/'+podName">
-          {{podName}}
+      <a-breadcrumb-item v-if="appName">
+        <a-link :href="'/helm/app/'+appName">
+          {{appName}}
         </a-link>
       </a-breadcrumb-item>
     </a-breadcrumb>
     <div class="layout">
       <a-card style="height: auto;"  id="container">
         <a-tabs >
-          <a-tab-pane key="1" v-if="helmApp" :loading="loading" class="tab-content-container">
+          <a-tab-pane key="1" v-if="appName" :loading="loading" class="tab-content-container">
             <template #title><icon-calendar/>概览</template>
+            <AppOverview :clusterId="clusterStore.id" :nameSpace="clusterStore.curNamespace" :appName="appName" />
           </a-tab-pane>
           <a-tab-pane key="4" :loading="loading">
             <template #title>
@@ -40,6 +41,7 @@ import { useClusterStore } from '@/store';
 import api, { Cluster, K8sPod, HttpResponse, getHelmApp } from '@/api/cluster';
 import useLoading from '@/hooks/loading';
 import date from '@/utils/date';
+import AppOverview from "./components/AppOverview.vue";
 
 const { loading, setLoading } = useLoading();
 const clusterStore = useClusterStore();
@@ -47,8 +49,8 @@ const router = useRouter();
 
 const route = useRoute();
 
-const podName = ref();
-podName.value = route.params.name;
+const appName = ref();
+appName.value = route.params.name;
 
 const helmApp = ref();
 
@@ -61,7 +63,7 @@ const checkStoreData = () => {
 const fetchHelmApp = async () => {
   checkStoreData();
   try {
-    const result: HttpResponse = await getHelmApp(podName.value, clusterStore.id!, clusterStore.curNamespace!);
+    const result: HttpResponse = await getHelmApp(appName.value, clusterStore.id!, clusterStore.curNamespace!);
     console.log(result.msg);
     // const currentTime = new Date();
     // const podCreateTime = pod.metadata && pod.metadata.creationTimestamp ? date.formatTimeDiff(new Date(pod.metadata.creationTimestamp),currentTime) : '';
@@ -72,7 +74,7 @@ const fetchHelmApp = async () => {
 };
 
 onMounted(() => {
-  fetchHelmApp();
+  checkStoreData();
 });
 
 </script>
