@@ -83,16 +83,35 @@ export const getAppStore = async (storeID: string) => {
 };
 
 export const getAppStoreAppList = async (appstoreID: string) => {
-  return axios.get(`/api/appstore/apps/${appstoreID}`);
+  return axios.get(`/api/appstore/store/apps/${appstoreID}`);
 };
 
 export const getAppStoreAppVersions = async (appstoreID: string, chartName: string) => {
-  return axios.get(`/api/appstore/appversions/${appstoreID}/${chartName}`);
+  return axios.get(`/api/appstore/store/appversions/${appstoreID}/${chartName}`);
 };
 
 export const getAppStoreAppInfo = async (appstoreID: string, chartName: string ,chartVersion: string) => {
-  return axios.get(`/api/appstore/app/${appstoreID}/${chartName}/${chartVersion}`);
+  return axios.get(`/api/appstore/store/app/${appstoreID}/${chartName}/${chartVersion}`);
 };
+
+export const testAppStoreConnection = (data: FormData) => {
+  return axios.post('/api/appstore/store/testConnection', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+};
+
+export const addAppStore = async (data: FormData) => {
+  return axios.post(`/api/appstore/store`, data,
+    { 
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
+};
+
 
 export const getHelmAppList = async (clusterID: string, namespace: string) => {
   // return axios.get(`/api/helm/apps/${clusterID}/${namespace}`);
@@ -147,4 +166,6 @@ export default {
   getAppStoreAppList, 
   getAppStoreAppVersions,
   getAppStoreAppInfo,
+  testAppStoreConnection,
+  addAppStore,
  };

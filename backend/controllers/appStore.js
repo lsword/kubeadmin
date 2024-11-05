@@ -8,6 +8,10 @@ const compressing = require('compressing');
 
 const nanoid = customAlphabet('abcdefghigklmnopqrstuvwxyz', 10)
 
+exports.testAppStoreConnection = async(ctx) => {
+
+}
+
 exports.getAppStores = async (ctx) => {
   try {
     const db = await kubeadminDB();
@@ -232,8 +236,8 @@ exports.getAppStoreAppDetail = async (ctx) => {
       }).finally(()=>{
         // delte tmp dir
       });
-    });  }
-  else {
+    });  
+  } else {
     ctx.status = 500;
     ctx.body = {
       status: 500,
@@ -300,9 +304,10 @@ exports.addAppStore = async (ctx) => {
   try {
     const db = await kubeadminDB();
     const storeId = nanoid();
-    const result = await db.run('INSERT INTO appstore (id, name, type, address) VALUES (?, ?, ?)', [storeId, name, type, address]);
+    const result = await db.run('INSERT INTO appstore (id, name, type, address) VALUES (?, ?, ?, ?)', [storeId, name, type, address]);
     ctx.body = {
-      status: 201,
+      status: 200,
+      code: 20000,
       msg: 'App store added successfully.',
       data: { id: result.lastID }
     };

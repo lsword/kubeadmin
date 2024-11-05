@@ -31,7 +31,7 @@
     </a-layout>
 
     <a-modal v-model:visible="showModal" title="增加集群" @ok="handleAddCluster" @cancel="resetForm">
-      <a-form :model="clusterForm">
+      <a-form :model="clusterForm" :auto-label-width="true">
         <a-form-item label="集群名称">
           <a-input v-model="newClusterName" placeholder="请输入集群名称" />
         </a-form-item>
