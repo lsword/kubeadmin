@@ -62,6 +62,15 @@
         </a-form-item>
       </a-form>
     </a-modal>
+    <a-modal v-model:visible="showDeleteConfirmModal" @ok="handleDeleteOk" @cancel="handleDeleteCancel">
+      <template #title>
+        {{ $t('storelist.modal.deleteAppStore.title') }}
+      </template>
+      <div>{{ $t('storelist.modal.deleteAppStore.confirmInfo') }}</div>
+      <div>{{ $t('storelist.modal.deleteAppStore.appStoreName') }}: {{ curAppStore.name }}</div>
+      <div>{{ $t('storelist.modal.deleteAppStore.appStoreType') }}: {{ curAppStore.type }}</div>
+      <div>{{ $t('storelist.modal.deleteAppStore.appStoreAddress') }}: {{ curAppStore.address }}</div>
+    </a-modal>
   </div>
 </template>
 
@@ -69,10 +78,13 @@
 import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { getAppStoreList, testAppStoreConnection, addAppStore } from '@/api/cluster';
+import api, { getAppStoreList, testAppStoreConnection, addAppStore, deleteAppStore } from '@/api/cluster';
 import useLoading from '@/hooks/loading';
+import { Message } from '@arco-design/web-vue';
 
 import date from '@/utils/date';
+
+const { t: localtext } = useI18n();
 
 const router = useRouter();
 const { loading, setLoading } = useLoading();
@@ -81,6 +93,14 @@ const appStores = ref();
 
 const showAddAppStoreModal = ref(false);
 const newAppStore = reactive({
+  name: '',
+  address: '',
+  type: 'chartmuseum',
+});
+
+const showDeleteConfirmModal = ref(false);
+const curAppStore = reactive({
+  id: '',
   name: '',
   address: '',
   type: 'chartmuseum',
@@ -97,20 +117,6 @@ const fetchAppStores = async () => {
 };
 
 const handleAddAppStore = async () => {
-  /*
-  try {
-    const response = await addAppStore(newAppStore.value);
-    if (response.status === 0) {
-      // Handle success, e.g., refresh the app store list
-      showAddAppStoreModal.value = false;
-    } else {
-      // Handle error
-      console.error(response.msg);
-    }
-  } catch (error) {
-    console.error('Failed to add app store:', error);
-  }
-    */
   if (!newAppStore.name || !newAppStore.name.length) return;
   if (!newAppStore.address || !newAppStore.address.length) return;
   
@@ -122,7 +128,6 @@ const handleAddAppStore = async () => {
   try {
     await addAppStore(formData);
   } catch (error) {
-    /*
     if (error instanceof Error) {
       // Message.error(error.message);
       Message.error(localtext('cluster.addcluster.error.noconnection'));
@@ -132,33 +137,51 @@ const handleAddAppStore = async () => {
     } else {
       Message.error('An unknown error occurred.');
     }
-      */
   }
   fetchAppStores();
 };
 
 const testConnection = async () => {
-  /*
+  const formData = new FormData();
+  formData.append('address', newAppStore.address);
+  formData.append('type', newAppStore.type);
   try {
-    const response = await testAppStoreConnection(newAppStore.value);
-    if (response.status === 0) {
-      // Connection successful
-      console.log('Connection successful');
-    } else {
-      // Connection failed
-      console.error(response.msg);
-    }
+    const result = await api.testAppStoreConnection(formData);
+    console.log(result)
+    Message.success(result.data.msg);
   } catch (error) {
-    console.error('Failed to test connection:', error);
+    // Message.error(error);
   }
-    */
 };
+
+const handleDelete = async (record:any) => {
+  curAppStore.id = record.id;
+  curAppStore.name = record.name;
+  curAppStore.address = record.address;
+  curAppStore.type = record.type;
+  showDeleteConfirmModal.value = true;
+};
+
+const handleDeleteOk = async () => {
+  try {
+    await deleteAppStore(curAppStore.id);
+    Message.success('Cluster deleted successfully.');
+  } catch (error) {
+    if (error instanceof Error) {
+      Message.error(error.message);
+    } else {
+      Message.error('An unknown error occurred.');
+    }
+  }
+
+  fetchAppStores();
+};
+
+const handleDeleteCancel = async () => {
+}
 
 const handleViewAppStore = (record: any) => {
   router.push(`/appstore/storeapplist/${record.id}`);
-};
-
-const handleDelete = (record:any) => {
 };
 
 onMounted(() => {
