@@ -30,6 +30,11 @@
       const openKeys = ref<string[]>([]);
       const selectedKey = ref<string[]>([]);
 
+      const routeMappings: any = {
+        'appstore': { name: 'appstore.storelist'},
+        'helm': { name: 'helm.applist'},
+      };
+
       const goto = (item: RouteRecordRaw) => {
         // Open external link
         if (regexUrl.test(item.path)) {
@@ -39,6 +44,7 @@
         }
         // Eliminate external link side effects
         const { hideInMenu, activeMenu } = item.meta as RouteMeta;
+        /*
         if (route.name === item.name && !hideInMenu && !activeMenu) {
           selectedKey.value = [item.name as string];
           return;
@@ -47,6 +53,10 @@
         router.push({
           name: item.name,
         });
+        */
+        const routeMapping = routeMappings[item.name !== undefined ? item.name : ''] || { name: item.name || '' };
+        router.push(routeMapping);
+
       };
       const findMenuOpenKeys = (target: string) => {
         const result: string[] = [];

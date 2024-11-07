@@ -21,10 +21,11 @@ const HELMAPPS: AppRouteRecordRaw = {
       meta: {
         locale: 'menu.helm.applist',
         requiresAuth: true,
+        activeMenu: 'helm',
         // activeMenu: 'helm',
         roles: ['*'],
         title: '我的应用',
-        hideInMenu: false,
+        hideInMenu: true,
       },
     },
     {

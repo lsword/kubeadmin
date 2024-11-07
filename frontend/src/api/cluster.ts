@@ -10,8 +10,11 @@ export interface Cluster {
   status: string;
 }
 
-export interface HttpResponse {
-  [x: string]: any;
+export interface HttpResponse<T = unknown> {
+  // [x: string]: any;
+  msg: string;
+  code: number;
+  data: T;
 };
 
 export interface K8sPod {

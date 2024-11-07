@@ -21,10 +21,10 @@ const APPSTORE: AppRouteRecordRaw = {
       meta: {
         locale: 'menu.appstore',
         requiresAuth: true,
-        activeMenu: 'appstore.storelist',
+        activeMenu: 'appstore',
         roles: ['*'],
         title: '应用仓库',
-        hideInMenu: false,
+        hideInMenu: true,
       },
     },
     {
