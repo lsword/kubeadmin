@@ -1,6 +1,5 @@
 // frontend/src/api/cluster.ts
 import axios from 'axios';
-import { HttpResponse } from './interceptor';
 
 export interface Cluster {
   id: string;
@@ -10,11 +9,10 @@ export interface Cluster {
   created_at: string;
   status: string;
 }
-/*
+
 export interface HttpResponse {
   [x: string]: any;
 };
-*/
 
 export interface K8sPod {
   [x: string]: any;
@@ -85,7 +83,7 @@ export const getAppStore = async (storeID: string) => {
 };
 
 export const getAppStoreAppList = async (appstoreID: string) => {
-  return axios.get<HttpResponse>(`/api/appstore/store/apps/${appstoreID}`);
+  return axios.get(`/api/appstore/store/apps/${appstoreID}`);
 };
 
 export const getAppStoreAppVersions = async (appstoreID: string, chartName: string) => {
@@ -119,8 +117,7 @@ export const deleteAppStore = async (appstoreID: string) => {
 };
 
 export const getHelmAppList = async (clusterID: string, namespace: string) => {
-  // return axios.get(`/api/helm/apps/${clusterID}/${namespace}`);
-  return axios.get<HttpResponse>(`/api/helm/apps/${clusterID}/${namespace}`);
+  return axios.get(`/api/helm/apps/${clusterID}/${namespace}`);
 };
 
 export const getHelmApp = async (appName: string, clusterID: string, namespace: string) => {

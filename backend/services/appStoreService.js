@@ -10,6 +10,19 @@ class AppStoreService {
     this.store = storeInfo;
   }
 
+  createResponse(code, msg, data = null) {
+    return { code, msg, data };
+  }
+
+  async testConnection(type, address) {
+    if (type === 'chartmuseum') return this.listAppsOfChartmuseum(address);
+    return this.createResponse(-1, `Unknown store type: ${type}`);
+  }
+
+  async testConnectionOfChartmuseum(address) {
+
+  }
+
   async listApps() {
     if (this.store.type === 'chartmuseum') return this.listAppsOfChartmuseum();
     return null;
@@ -18,12 +31,10 @@ class AppStoreService {
   async listAppsOfChartmuseum() {
     try {
       const response = await axios.get(this.store.address);
-      const charts = response.data;
-      // console.log(charts);
-      return charts;
+      console.log(response.data);
+      return this.createResponse(0, 'ok', response.data);
     } catch (error) {
-      console.error('Failed to retrieve charts from ChartMuseum:', error.message);
-      throw new Error('Failed to retrieve charts from ChartMuseum');
+      return this.createResponse(-1, 'Failed to retrieve charts from ChartMuseum', { error: error.message});
     }
   }
 

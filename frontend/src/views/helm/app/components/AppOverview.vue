@@ -45,7 +45,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import useLoading from '@/hooks/loading';
-import api, { Cluster, K8sPod, HttpResponse, getHelmApp } from '@/api/cluster';
+import api, { Cluster, K8sPod, getHelmApp, HttpResponse } from '@/api/cluster';
 
 const { loading, setLoading } = useLoading(true);
 

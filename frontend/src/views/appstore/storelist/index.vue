@@ -76,9 +76,10 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
+import { AxiosResponse } from 'axios';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import api, { getAppStoreList, testAppStoreConnection, addAppStore, deleteAppStore } from '@/api/cluster';
+import api, { getAppStoreList, testAppStoreConnection, addAppStore, deleteAppStore, HttpResponse} from '@/api/cluster';
 import useLoading from '@/hooks/loading';
 import { Message } from '@arco-design/web-vue';
 
@@ -112,7 +113,7 @@ const fetchAppStores = async () => {
     appStores.value = result.data;
     console.log(appStores.value);
   } catch (error) {
-    console.error('Failed to fetch app stores:', error);
+    console.log('Failed to fetch app stores:', error);
   }
 };
 
@@ -146,9 +147,10 @@ const testConnection = async () => {
   formData.append('address', newAppStore.address);
   formData.append('type', newAppStore.type);
   try {
-    const result = await api.testAppStoreConnection(formData);
-    console.log(result)
-    Message.success(result.data.msg);
+    const result:HttpResponse = await api.testAppStoreConnection(formData);
+    console.log("xxxx")
+    console.log(result.msg)
+    Message.success(result.msg);
   } catch (error) {
     // Message.error(error);
   }

@@ -8,10 +8,6 @@ const compressing = require('compressing');
 
 const nanoid = customAlphabet('abcdefghigklmnopqrstuvwxyz', 10)
 
-exports.testAppStoreConnection = async(ctx) => {
-
-}
-
 exports.getAppStores = async (ctx) => {
   try {
     const db = await kubeadminDB();
@@ -87,6 +83,8 @@ exports.getAppStoreApps = async (ctx) => {
 
   try {
     const appStoreService = new AppStoreService(storeInfo);
+    ctx.body = await appStoreService.listApps();
+    /*
     const apps = await appStoreService.listApps();
     ctx.body = {
       status: 200,
@@ -94,6 +92,7 @@ exports.getAppStoreApps = async (ctx) => {
       msg: 'App stores retrieved successfully.',
       data: apps
     };
+    */
   } catch(error) {
     ctx.status = 500;
     ctx.body = {
@@ -254,39 +253,27 @@ exports.getAppStoreAppDetail = async (ctx) => {
     msg: 'App stores retrieved successfully.',
     data: chartPackageInfo
   };
+};
 
-
-  /*
-  const storeInfo = await getAppStoreById(storeId);
-  if (!storeInfo) {
-    ctx.status = 500;
+exports.testAppStoreConnection = async(ctx) => {
+  const { type, address } = ctx.request.body;
+  console.log(`${type}--${address}`)
+  if (!type || !address) {
+    ctx.status = 400;
     ctx.body = {
-      status: 500,
-      msg: `Failed to get store info by storeid: ${storeId}`,
-      code: 50000, // Custom error code for connection failure
+      status: 400,
+      msg: 'Store type and address are required.',
       data: null
     };
+    return;
   }
-
-  try {
-    const appStoreService = new AppStoreService(storeInfo);
-    const apps = await appStoreService.listApps();
-    ctx.body = {
-      status: 200,
-      code: 20000,
-      msg: 'App stores retrieved successfully.',
-      data: apps
-    };
-  } catch(error) {
-    ctx.status = 500;
-    ctx.body = {
-      status: 50001,
-      msg: `Failed to get app info from store(${storeId}).`,
-      data: { error: error.message }
-    };
-  }
-*/
-};
+  ctx.body = {
+    status: 200,
+    code: 20000,
+    msg: 'App store connected successfully.',
+    data: null
+  };
+}
 
 exports.addAppStore = async (ctx) => {
   const { name, type, address } = ctx.request.body;
@@ -316,6 +303,52 @@ exports.addAppStore = async (ctx) => {
     ctx.body = {
       status: 500,
       msg: 'Failed to add app store.',
+      data: { error: error.message }
+    };
+  }
+};
+
+exports.deleteAppStore = async (ctx) => {
+  const { storeId } = ctx.params;
+
+  if (!storeId) {
+    ctx.status = 400;
+    ctx.body = {
+      status: 400,
+      code: 40000,
+      msg: 'Store id is required.',
+      data: null
+    };
+    return;
+  }
+
+  try {
+    const db = await kubeadminDB();
+    const result = await db.run('DELETE FROM appstore WHERE id = ?', storeId);
+
+    if (result.changes === 0) {
+      ctx.status = 404;
+      ctx.body = {
+        status: 404,
+        msg: 'Store not found.',
+        code: 1007,
+        data: null
+      };
+      return;
+    }
+
+    ctx.body = {
+      status: 200,
+      msg: 'Store deleted successfully.',
+      code: 2003,
+      data: null
+    };
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = {
+      status: 500,
+      msg: 'Store to delete cluster.',
+      code: 1008,
       data: { error: error.message }
     };
   }
