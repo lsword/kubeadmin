@@ -49,8 +49,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { getAppStoreAppList, getAppStore } from '@/api/cluster';
-import { HttpResponse } from '@/api/interceptor';
+import { getAppStoreAppList, getAppStore, HttpResponse } from '@/api/cluster';
 import useLoading from '@/hooks/loading';
 
 import date from '@/utils/date';
@@ -91,12 +90,10 @@ const fetchAppStore = async () => {
 
 const fetchAppStoreApps = async () => {
   try {
-    const result = await getAppStoreAppList(storeid.value);
-    console.log(result);
-    console.log("000")
-    // apps.value = result.data;
-    // if (result.code !== 0)
-    
+    const result:HttpResponse = await getAppStoreAppList(storeid.value);
+    if (result.code !== 0) {
+      return;
+    }    
     Object.keys(result.data).forEach((key:string)=>{
       const appData = {
         name: key,
@@ -105,7 +102,6 @@ const fetchAppStoreApps = async () => {
       }
       apps.value!.push(appData);
     });
-    console.log(apps.value);
   } catch (error) {
     console.error('Failed to fetch app stores:', error);
   }

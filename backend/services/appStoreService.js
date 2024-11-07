@@ -15,23 +15,30 @@ class AppStoreService {
   }
 
   async testConnection(type, address) {
-    if (type === 'chartmuseum') return this.listAppsOfChartmuseum(address);
+    if (type === 'chartmuseum') return this.testConnectionOfChartmuseum(address);
     return this.createResponse(-1, `Unknown store type: ${type}`);
   }
 
   async testConnectionOfChartmuseum(address) {
-
+    try {
+      const response = await axios.get(address);
+      if (response.status === 200) {
+        return this.createResponse(0, `okok`);
+      }
+    } catch(error) {
+      return this.createResponse(-1, `nonono`);
+    }
+    return this.createResponse(-1, `nonono`);
   }
 
   async listApps() {
     if (this.store.type === 'chartmuseum') return this.listAppsOfChartmuseum();
-    return null;
+    return this.createResponse(-1, `Unknown store type: ${this.store.type}`);
   }
 
   async listAppsOfChartmuseum() {
     try {
       const response = await axios.get(this.store.address);
-      console.log(response.data);
       return this.createResponse(0, 'ok', response.data);
     } catch (error) {
       return this.createResponse(-1, 'Failed to retrieve charts from ChartMuseum', { error: error.message});
@@ -40,13 +47,13 @@ class AppStoreService {
 
   async getAppVersions(appname) {
     if (this.store.type === 'chartmuseum') return this.getChartmuseumAppVersions(appname);
-    return null;
+    return this.createResponse(-1, `Unknown store type: ${this.store.type}`);
   }
 
   async getChartmuseumAppVersions(appname) {
     try {
       const response = await axios.get(`${this.store.address}/${appname}`);
-      // const charts = response.data;
+      // console.log(`${this.store.address}/${appname}`)
       const appVersions = [];
       response.data.forEach(ver => {
         const appVersion = {};
@@ -58,11 +65,10 @@ class AppStoreService {
         appVersion.description = ver.description;
         appVersions.push(appVersion);
       });
-      console.log(appVersions);
-      return appVersions;
+      return this.createResponse(0, 'ok', appVersions);
+      
     } catch (error) {
-      console.error('Failed to retrieve charts from ChartMuseum:', error.message);
-      throw new Error('Failed to retrieve charts from ChartMuseum');
+      return this.createResponse(-1, 'Failed to retrieve chart versions from ChartMuseum', { error: error.message});
     }
   }
 

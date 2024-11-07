@@ -62,6 +62,12 @@ async function kubeadminDB() {
       type TEXT NOT NULL,
       address TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS imagestore (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      type TEXT NOT NULL,
+      address TEXT NOT NULL
+    );
   `);
 
   return db;
@@ -87,4 +93,15 @@ getAppStoreById = async (appstoreId) => {
   }
 }
 
-module.exports = { kubeadminDB, getClusterById, getAppStoreById };
+getImageStoreById = async (imagestoreId) => {
+  try {
+    const db = await kubeadminDB();
+    const imagestore = await db.get('SELECT id, name, type, address FROM imagestore WHERE id = ?', imagestoreId);
+    return imagestore;
+  } catch (error) {
+    return null;
+  }
+}
+
+
+module.exports = { kubeadminDB, getClusterById, getAppStoreById, getImageStoreById };

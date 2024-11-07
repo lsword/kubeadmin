@@ -13,15 +13,13 @@ exports.getAppStores = async (ctx) => {
     const db = await kubeadminDB();
     const appStores = await db.all('SELECT * FROM appstore');
     ctx.body = {
-      status: 200,
-      code: 20000,
+      code: 0,
       msg: 'App stores retrieved successfully.',
       data: appStores
     };
   } catch (error) {
-    ctx.status = 500;
     ctx.body = {
-      status: 500,
+      status: -1,
       msg: 'Failed to retrieve app stores.',
       data: { error: error.message }
     };
@@ -31,9 +29,8 @@ exports.getAppStores = async (ctx) => {
 exports.getAppStore = async (ctx) => {
   const { storeId } = ctx.params;
   if (!storeId) {
-    ctx.status = 400;
     ctx.body = {
-      status: 400,
+      code: -1,
       msg: 'StoreId is required.',
       data: null,
     };
@@ -42,17 +39,14 @@ exports.getAppStore = async (ctx) => {
 
   const storeInfo = await getAppStoreById(storeId);
   if (!storeInfo) {
-    ctx.status = 500;
     ctx.body = {
-      status: 500,
+      code: -1,
       msg: `Failed to get store info by storeid: ${storeId}`,
-      code: 50000, // Custom error code for connection failure
       data: null,
     };
   }
   ctx.body = {
-    status: 200,
-    code: 20000,
+    code: 0,
     msg: 'App stores retrieved successfully.',
     data: storeInfo,
   };
@@ -61,9 +55,8 @@ exports.getAppStore = async (ctx) => {
 exports.getAppStoreApps = async (ctx) => {
   const { storeId } = ctx.params;
   if (!storeId) {
-    ctx.status = 400;
     ctx.body = {
-      status: 400,
+      code: -1,
       msg: 'StoreId is required.',
       data: null
     };
@@ -72,11 +65,9 @@ exports.getAppStoreApps = async (ctx) => {
   
   const storeInfo = await getAppStoreById(storeId);
   if (!storeInfo) {
-    ctx.status = 500;
     ctx.body = {
-      status: 500,
+      code: -1,
       msg: `Failed to get store info by storeid: ${storeId}`,
-      code: 50000, // Custom error code for connection failure
       data: null
     };
   }
@@ -84,19 +75,9 @@ exports.getAppStoreApps = async (ctx) => {
   try {
     const appStoreService = new AppStoreService(storeInfo);
     ctx.body = await appStoreService.listApps();
-    /*
-    const apps = await appStoreService.listApps();
-    ctx.body = {
-      status: 200,
-      code: 20000,
-      msg: 'App stores retrieved successfully.',
-      data: apps
-    };
-    */
   } catch(error) {
-    ctx.status = 500;
     ctx.body = {
-      status: 50001,
+      code: -1,
       msg: `Failed to get app info from store(${storeId}).`,
       data: { error: error.message }
     };
@@ -106,9 +87,8 @@ exports.getAppStoreApps = async (ctx) => {
 exports.getAppStore = async (ctx) => {
   const { storeId } = ctx.params;
   if (!storeId) {
-    ctx.status = 400;
     ctx.body = {
-      status: 400,
+      code: -1,
       msg: 'StoreId is required.',
       data: null,
     };
@@ -117,17 +97,14 @@ exports.getAppStore = async (ctx) => {
 
   const storeInfo = await getAppStoreById(storeId);
   if (!storeInfo) {
-    ctx.status = 500;
     ctx.body = {
-      status: 500,
+      code: -1,
       msg: `Failed to get store info by storeid: ${storeId}`,
-      code: 50000, // Custom error code for connection failure
       data: null,
     };
   }
   ctx.body = {
-    status: 200,
-    code: 20000,
+    code: 0,
     msg: 'App stores retrieved successfully.',
     data: storeInfo,
   };
@@ -136,9 +113,8 @@ exports.getAppStore = async (ctx) => {
 exports.getAppStoreAppVersions = async (ctx) => {
   const { storeId, chartName } = ctx.params;
   if (!storeId || !chartName) {
-    ctx.status = 400;
     ctx.body = {
-      status: 400,
+      code: -1,
       msg: 'StoreId and ChartName are required.',
       data: null
     };
@@ -147,27 +123,18 @@ exports.getAppStoreAppVersions = async (ctx) => {
 
   const storeInfo = await getAppStoreById(storeId);
   if (!storeInfo) {
-    ctx.status = 500;
     ctx.body = {
-      status: 500,
+      code: -1,
       msg: `Failed to get store info by storeid: ${storeId}`,
-      code: 50000, // Custom error code for connection failure
       data: null
     };
   }
   try {
     const appStoreService = new AppStoreService(storeInfo);
-    const appVersionsInfo = await appStoreService.getAppVersions(chartName);
-    ctx.body = {
-      status: 200,
-      code: 20000,
-      msg: 'App info retrieved successfully.',
-      data: appVersionsInfo,
-    };
+    ctx.body = await appStoreService.getAppVersions(chartName);
   } catch(error) {
-    ctx.status = 500;
     ctx.body = {
-      status: 50001,
+      code: -1,
       msg: `Failed to get app info from store(${storeId}).`,
       data: { error: error.message }
     };
@@ -178,9 +145,8 @@ exports.getAppStoreAppVersions = async (ctx) => {
 exports.getAppStoreAppDetail = async (ctx) => {
   const { storeId, chartName, chartVersion } = ctx.params;
   if (!storeId || !chartName || !chartVersion) {
-    ctx.status = 400;
     ctx.body = {
-      status: 400,
+      code: -1,
       msg: 'StoreId, ChartName and ChartVersion are required.',
       data: null
     };
@@ -194,11 +160,9 @@ exports.getAppStoreAppDetail = async (ctx) => {
 
   const storeInfo = await getAppStoreById(storeId);
   if (!storeInfo) {
-    ctx.status = 500;
     ctx.body = {
-      status: 500,
+      code: -1,
       msg: `Failed to get store info by storeid: ${storeId}`,
-      code: 50000, // Custom error code for connection failure
       data: null,
     };
     return;
@@ -237,19 +201,16 @@ exports.getAppStoreAppDetail = async (ctx) => {
       });
     });  
   } else {
-    ctx.status = 500;
     ctx.body = {
-      status: 500,
+      code: -1, // Custom error code for connection failure
       msg: `Store type(${storeId}) does not supported`,
-      code: 50000, // Custom error code for connection failure
       data: null,
     };
     return;
   }
 
   ctx.body = {
-    status: 200,
-    code: 20000,
+    code: 0,
     msg: 'App stores retrieved successfully.',
     data: chartPackageInfo
   };
@@ -259,29 +220,23 @@ exports.testAppStoreConnection = async(ctx) => {
   const { type, address } = ctx.request.body;
   console.log(`${type}--${address}`)
   if (!type || !address) {
-    ctx.status = 400;
     ctx.body = {
-      status: 400,
+      code: -1,
       msg: 'Store type and address are required.',
       data: null
     };
     return;
   }
-  ctx.body = {
-    status: 200,
-    code: 20000,
-    msg: 'App store connected successfully.',
-    data: null
-  };
+  const appStoreService = new AppStoreService();
+  ctx.body = await appStoreService.testConnection(type, address);
 }
 
 exports.addAppStore = async (ctx) => {
   const { name, type, address } = ctx.request.body;
 
   if (!name || !type || !address) {
-    ctx.status = 400;
     ctx.body = {
-      status: 400,
+      code: -1,
       msg: 'Name, type, and address are required.',
       data: null
     };
@@ -293,15 +248,13 @@ exports.addAppStore = async (ctx) => {
     const storeId = nanoid();
     const result = await db.run('INSERT INTO appstore (id, name, type, address) VALUES (?, ?, ?, ?)', [storeId, name, type, address]);
     ctx.body = {
-      status: 200,
-      code: 20000,
+      code: 0,
       msg: 'App store added successfully.',
       data: { id: result.lastID }
     };
   } catch (error) {
-    ctx.status = 500;
     ctx.body = {
-      status: 500,
+      code: -1,
       msg: 'Failed to add app store.',
       data: { error: error.message }
     };
@@ -312,10 +265,8 @@ exports.deleteAppStore = async (ctx) => {
   const { storeId } = ctx.params;
 
   if (!storeId) {
-    ctx.status = 400;
     ctx.body = {
-      status: 400,
-      code: 40000,
+      code: -1,
       msg: 'Store id is required.',
       data: null
     };
@@ -327,28 +278,23 @@ exports.deleteAppStore = async (ctx) => {
     const result = await db.run('DELETE FROM appstore WHERE id = ?', storeId);
 
     if (result.changes === 0) {
-      ctx.status = 404;
       ctx.body = {
-        status: 404,
+        code: -1,
         msg: 'Store not found.',
-        code: 1007,
         data: null
       };
       return;
     }
 
     ctx.body = {
-      status: 200,
+      code: 0,
       msg: 'Store deleted successfully.',
-      code: 2003,
       data: null
     };
   } catch (error) {
-    ctx.status = 500;
     ctx.body = {
-      status: 500,
+      code: -1,
       msg: 'Store to delete cluster.',
-      code: 1008,
       data: { error: error.message }
     };
   }
