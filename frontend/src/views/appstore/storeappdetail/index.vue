@@ -97,7 +97,8 @@ import { ref, reactive, watch, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { Message,Modal } from '@arco-design/web-vue';
 import { useClusterStore } from '@/store';
-import { getAppStoreAppInfo, getAppStoreAppVersions, getAppStore, postHelmAppInstall } from '@/api/cluster';
+import { postHelmAppInstall } from '@/api/cluster';
+import appStoreApi from '@/api/appstore';
 import { HttpResponse } from '@/api/http';
 import ConfigEditor from '@/components/configeditor/index.vue';
 import MarkDown from '@/components/markdown/index.vue'
@@ -165,7 +166,7 @@ const onValueChanged = (value:string) => {
 const fetchAppStore = async () => {
   try {
     setLoading(true);
-    const result = await getAppStore(storeid.value);
+    const result = await appStoreApi.getAppStore(storeid.value);
     store.value = result.data;
   } catch(error) {
     console.error('Failed to fetch app store:', error);
@@ -177,7 +178,7 @@ const fetchAppStore = async () => {
 const fetchAppVersions = async () => {
   try {
     setLoading(true);
-    const result = await getAppStoreAppVersions(storeid.value, chartname.value);
+    const result = await appStoreApi.getAppStoreAppVersions(storeid.value, chartname.value);
     if (Array.isArray(result.data) && result.data.length > 0) {
       appVersions.value = result.data;
       curVersion.value = appVersions.value[0]?.version || '';
@@ -195,7 +196,7 @@ const fetchAppInfo = async () => {
   try {
     setLoading(true);
     if (curVersion.value==='') return;
-    const result = await getAppStoreAppInfo(storeid.value, chartname.value, curVersion.value);
+    const result = await appStoreApi.getAppStoreAppInfo(storeid.value, chartname.value, curVersion.value);
     appInfo.value = result.data;
     defaultValues.value = appInfo.value.values;
     installValues.value = appInfo.value.values;

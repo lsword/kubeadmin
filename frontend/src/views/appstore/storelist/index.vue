@@ -78,7 +78,7 @@
 import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import api, { getAppStoreList, testAppStoreConnection, addAppStore, deleteAppStore} from '@/api/cluster';
+import api from '@/api/appstore';
 import { HttpResponse } from '@/api/http';
 import useLoading from '@/hooks/loading';
 import { Message } from '@arco-design/web-vue';
@@ -109,7 +109,7 @@ const curAppStore = reactive({
 
 const fetchAppStores = async () => {
   try {
-    const result:HttpResponse = await getAppStoreList();
+    const result:HttpResponse = await api.getAppStoreList();
     appStores.value = result.data;
     console.log(appStores.value);
   } catch (error) {
@@ -127,7 +127,7 @@ const handleAddAppStore = async () => {
   formData.append('type', newAppStore.type);
 
   try {
-    await addAppStore(formData);
+    await api.addAppStore(formData);
   } catch (error) {
     if (error instanceof Error) {
       // Message.error(error.message);
@@ -166,7 +166,7 @@ const handleDelete = async (record:any) => {
 
 const handleDeleteOk = async () => {
   try {
-    await deleteAppStore(curAppStore.id);
+    await api.deleteAppStore(curAppStore.id);
     Message.success('Cluster deleted successfully.');
   } catch (error) {
     if (error instanceof Error) {

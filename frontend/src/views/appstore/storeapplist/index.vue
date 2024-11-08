@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { getAppStoreAppList, getAppStore } from '@/api/cluster';
+import api from '@/api/appstore';
 import { HttpResponse } from '@/api/http';
 import useLoading from '@/hooks/loading';
 
@@ -82,7 +82,7 @@ const handleSelectChart = (chartName: string) => {
 
 const fetchAppStore = async () => {
   try {
-    const result = await getAppStore(storeid.value);
+    const result = await api.getAppStore(storeid.value);
     store.value = result.data;
   } catch(error) {
     console.error('Failed to fetch app store:', error);
@@ -91,7 +91,7 @@ const fetchAppStore = async () => {
 
 const fetchAppStoreApps = async () => {
   try {
-    const result:HttpResponse = await getAppStoreAppList(storeid.value);
+    const result:HttpResponse = await api.getAppStoreAppList(storeid.value);
     if (result.code !== 0) {
       return;
     }    

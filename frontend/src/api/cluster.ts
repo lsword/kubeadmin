@@ -1,6 +1,5 @@
 // frontend/src/api/cluster.ts
 import axios from 'axios';
-import type { HttpResponse } from '@/api/http';
 
 export interface Cluster {
   id: string;
@@ -41,7 +40,7 @@ export const addCluster = async (data: FormData) => {
 };
 
 export const getClusters = async() => {
-  const resp = await axios.get<HttpResponse>(`/api/k8s/clusters`);
+  const resp = await axios.get(`/api/k8s/clusters`);
   return resp.data;
 };
 
@@ -51,86 +50,38 @@ const deleteCluster = async (clusterId: string) => {
 };
 
 export const getCluster = async(clusterID: string) => {
-  const resp = await axios.get<HttpResponse>(
+  const resp = await axios.get(
     `/api/k8s/cluster/${clusterID}`
   );
   return resp.data;
 }
 
 export const getNamespaces = async (clusterID: string) => {
-  const resp = await axios.get<HttpResponse>(
+  const resp = await axios.get(
     `/api/k8s/namespaces/${clusterID}`
   );
   return resp.data;
 }
 
 export const getClusterOverview = async (clusterId: string) => {
-  const resp = await axios.get<HttpResponse>(`/api/k8s/clusterOverview/${clusterId}`);
+  const resp = await axios.get(`/api/k8s/clusterOverview/${clusterId}`);
   return resp.data;
 };
 
 export const getPodList =  async(clusterID: string, nameSpace: string) => {
-  const resp = await axios.get<HttpResponse>(
+  const resp = await axios.get(
     `/api/k8s/pods/${clusterID}/${nameSpace}`
   );
   return resp.data;
 };
 
 export const getPodDetail = async(clusterID: string, nameSpace: string, podName: string) => {
-  const resp = await axios.get<HttpResponse>(
+  const resp = await axios.get(
     `/api/k8s/pod/${clusterID}/${nameSpace}/${podName}`
   );
   return resp.data;
 };
 
-export const getAppStoreList = async () => {
-  const resp = await axios.get<HttpResponse>(`/api/appstore/stores`);
-  return resp.data;
-};
-
-export const getAppStore = async (storeID: string) => {
-  return axios.get<HttpResponse>(`/api/appstore/store/${storeID}`);
-};
-
-export const getAppStoreAppList = async (appstoreID: string) => {
-  const resp = await axios.get<HttpResponse>(`/api/appstore/store/apps/${appstoreID}`);
-  return resp.data;
-};
-
-export const getAppStoreAppVersions = async (appstoreID: string, chartName: string) => {
-  const resp = await axios.get<HttpResponse>(`/api/appstore/store/appversions/${appstoreID}/${chartName}`);
-  return resp.data;
-};
-
-export const getAppStoreAppInfo = async (appstoreID: string, chartName: string ,chartVersion: string) => {
-  const resp = await axios.get<HttpResponse>(`/api/appstore/store/app/${appstoreID}/${chartName}/${chartVersion}`);
-  return resp.data;
-};
-
-export const testAppStoreConnection = async (data: FormData) => {
-  const resp = await axios.post<HttpResponse>('/api/appstore/store/testConnection', data, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  return resp.data;
-};
-
-export const addAppStore = async (data: FormData) => {
-  const resp = await axios.post(`/api/appstore/store`, data,
-    { 
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }
-  );
-  return resp.data;
-};
-
-export const deleteAppStore = async (appstoreID: string) => {
-  const resp = await axios.delete(`/api/appstore/store/${appstoreID}`);
-  return resp.data;
-};
 
 export const getHelmAppList = async (clusterID: string, namespace: string) => {
   const resp = await axios.get(`/api/helm/apps/${clusterID}/${namespace}`);
@@ -183,11 +134,4 @@ export default {
   getPodList, 
   getPodDetail, 
   getHelmAppList, 
-  getAppStoreList,
-  getAppStore,
-  getAppStoreAppList, 
-  getAppStoreAppVersions,
-  getAppStoreAppInfo,
-  testAppStoreConnection,
-  addAppStore,
  };
