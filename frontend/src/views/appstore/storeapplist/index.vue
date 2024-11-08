@@ -49,7 +49,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { getAppStoreAppList, getAppStore, HttpResponse } from '@/api/cluster';
+import { getAppStoreAppList, getAppStore } from '@/api/cluster';
+import { HttpResponse } from '@/api/http';
 import useLoading from '@/hooks/loading';
 
 import date from '@/utils/date';
@@ -94,11 +95,12 @@ const fetchAppStoreApps = async () => {
     if (result.code !== 0) {
       return;
     }    
-    Object.keys(result.data).forEach((key:string)=>{
+    const data = result.data as Record<string, any>;
+    Object.keys(data).forEach((key:string)=>{
       const appData = {
         name: key,
-        releases: result.data[key].length,
-        lastVersion: result.data[key][0].version,
+        releases: data[key].length,
+        lastVersion: data[key][0].version,
       }
       apps.value!.push(appData);
     });

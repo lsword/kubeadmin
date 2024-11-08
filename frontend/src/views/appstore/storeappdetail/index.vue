@@ -97,7 +97,8 @@ import { ref, reactive, watch, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { Message,Modal } from '@arco-design/web-vue';
 import { useClusterStore } from '@/store';
-import { getAppStoreAppInfo, getAppStoreAppVersions, getAppStore, postHelmAppInstall, HttpResponse } from '@/api/cluster';
+import { getAppStoreAppInfo, getAppStoreAppVersions, getAppStore, postHelmAppInstall } from '@/api/cluster';
+import { HttpResponse } from '@/api/http';
 import ConfigEditor from '@/components/configeditor/index.vue';
 import MarkDown from '@/components/markdown/index.vue'
 import useLoading from '@/hooks/loading';

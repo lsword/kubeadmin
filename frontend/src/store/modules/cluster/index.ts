@@ -51,7 +51,7 @@ const useClusterStore = defineStore('cluster', {
     async select(id:string) {
       const res = await api.getCluster(id);
       console.log(res.data)
-      this.setInfo(res.data);
+      this.setInfo(res.data as ClusterState);
       saveState('cluster', this.$state);
     },
 

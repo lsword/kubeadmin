@@ -2,13 +2,17 @@ import axios from 'axios';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Message, Modal } from '@arco-design/web-vue';
 import { getToken } from '@/utils/auth';
+import type { HttpResponse } from '@/api/http';
+
 
 // import { useUserStore } from '@/store';
+/*
 export interface HttpResponse<T = unknown> {
   msg: string;
   code: number;
   data: T;
 }
+*/
 
 if (import.meta.env.VITE_API_BASE_URL) {
   axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -71,7 +75,7 @@ axios.interceptors.response.use(
       return Promise.reject(new Error(res.msg || 'Error'));
     }
 */
-    return res;
+    return response;
   },
   (error) => {
     Message.error({

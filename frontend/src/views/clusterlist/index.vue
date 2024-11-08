@@ -125,7 +125,7 @@ const resetForm = () => {
 const fetchClusters = async () => {
   try {
     const result = await api.getClusters();
-    clusters.value = result.data.map((cluster: Cluster) => ({
+    clusters.value = (result.data as Cluster[]).map((cluster: Cluster) => ({
       id: cluster.id,
       name: cluster.name,
       address: cluster.address,
@@ -188,7 +188,7 @@ const handleDeleteCluster = async (clusterId:string) => {
 const handleSelectCluster = async (clusterId:string) => {
   console.log(clusterId);
   await clusterStore.select(clusterId);
-  router.push(`/clusteroverview`);
+  router.push(`/cluster/overview`);
 }
 
 onMounted(() => {

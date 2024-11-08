@@ -88,7 +88,7 @@ const fetchPodsInNamespace = async () => {
     k8sPodList.value = [];
     setLoading(true);
     const result = await api.getPodList(clusterStore.id!, clusterStore.curNamespace!);
-    result.data.forEach((pod: any)=>{
+    (result.data as K8sPod[]).forEach((pod: any)=>{
       const labels = pod.metadata && pod.metadata.labels ? Object.entries(pod.metadata.labels).map(([key, value]) => `${key}:${value}   `) : {};
       const currentTime = new Date();
       const podCreateTime = pod.metadata && pod.metadata.creationTimestamp ? date.formatTimeDiff(new Date(pod.metadata.creationTimestamp),currentTime) : '';

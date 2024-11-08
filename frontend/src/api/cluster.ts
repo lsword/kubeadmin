@@ -1,5 +1,6 @@
 // frontend/src/api/cluster.ts
 import axios from 'axios';
+import type { HttpResponse } from '@/api/http';
 
 export interface Cluster {
   id: string;
@@ -10,129 +11,144 @@ export interface Cluster {
   status: string;
 }
 
-export interface HttpResponse<T = unknown> {
-  // [x: string]: any;
-  msg: string;
-  code: number;
-  data: T;
-};
-
 export interface K8sPod {
   [x: string]: any;
 };
 
+export interface AppStore {
+  [x: string]: any;
+};
+
 // Define the function to call the testConnection API
-const testConnection = (data: FormData) => {
-  return axios.post('/api/k8s/testConnection', data, {
+export const testConnection = async (data: FormData) => {
+  const resp = await axios.post('/api/k8s/testConnection', data, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   });
+  return resp.data;
 };
 
-
-const addCluster = async (data: FormData) => {
-  return axios.post(`/api/k8s/cluster`, data,
+export const addCluster = async (data: FormData) => {
+  const resp = await axios.post(`/api/k8s/cluster`, data,
     { 
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     }
   );
+  return resp.data;
 };
 
-const getClusters = async() => {
-  return axios.get<Cluster[]>(`/api/k8s/clusters`);
+export const getClusters = async() => {
+  const resp = await axios.get<HttpResponse>(`/api/k8s/clusters`);
+  return resp.data;
 };
 
 const deleteCluster = async (clusterId: string) => {
-  return axios.delete(`/api/k8s/cluster/${clusterId}`);
+  const resp = await axios.delete(`/api/k8s/cluster/${clusterId}`);
+  return resp.data;
 };
 
-const getCluster = async(clusterID: string) => {
-  return axios.get<Cluster>(
+export const getCluster = async(clusterID: string) => {
+  const resp = await axios.get<HttpResponse>(
     `/api/k8s/cluster/${clusterID}`
   );
+  return resp.data;
 }
 
-export function getNamespaces(clusterID: string) {
-  return axios.get<string[]>(
+export const getNamespaces = async (clusterID: string) => {
+  const resp = await axios.get<HttpResponse>(
     `/api/k8s/namespaces/${clusterID}`
   );
+  return resp.data;
 }
 
-const getClusterOverview = async (clusterId: string) => {
-  return axios.get<Cluster>(`/api/k8s/clusterOverview/${clusterId}`);
+export const getClusterOverview = async (clusterId: string) => {
+  const resp = await axios.get<HttpResponse>(`/api/k8s/clusterOverview/${clusterId}`);
+  return resp.data;
 };
 
-export function getPodList(clusterID: string, nameSpace: string) {
-  return axios.get<K8sPod[]>(
+export const getPodList =  async(clusterID: string, nameSpace: string) => {
+  const resp = await axios.get<HttpResponse>(
     `/api/k8s/pods/${clusterID}/${nameSpace}`
   );
+  return resp.data;
 };
 
-export function getPodDetail(clusterID: string, nameSpace: string, podName: string) {
-  return axios.get<K8sPod>(
+export const getPodDetail = async(clusterID: string, nameSpace: string, podName: string) => {
+  const resp = await axios.get<HttpResponse>(
     `/api/k8s/pod/${clusterID}/${nameSpace}/${podName}`
   );
+  return resp.data;
 };
 
 export const getAppStoreList = async () => {
-  return axios.get(`/api/appstore/stores`);
+  const resp = await axios.get<HttpResponse>(`/api/appstore/stores`);
+  return resp.data;
 };
 
 export const getAppStore = async (storeID: string) => {
-  return axios.get(`/api/appstore/store/${storeID}`);
+  return axios.get<HttpResponse>(`/api/appstore/store/${storeID}`);
 };
 
 export const getAppStoreAppList = async (appstoreID: string) => {
-  return axios.get(`/api/appstore/store/apps/${appstoreID}`);
+  const resp = await axios.get<HttpResponse>(`/api/appstore/store/apps/${appstoreID}`);
+  return resp.data;
 };
 
 export const getAppStoreAppVersions = async (appstoreID: string, chartName: string) => {
-  return axios.get(`/api/appstore/store/appversions/${appstoreID}/${chartName}`);
+  const resp = await axios.get<HttpResponse>(`/api/appstore/store/appversions/${appstoreID}/${chartName}`);
+  return resp.data;
 };
 
 export const getAppStoreAppInfo = async (appstoreID: string, chartName: string ,chartVersion: string) => {
-  return axios.get(`/api/appstore/store/app/${appstoreID}/${chartName}/${chartVersion}`);
+  const resp = await axios.get<HttpResponse>(`/api/appstore/store/app/${appstoreID}/${chartName}/${chartVersion}`);
+  return resp.data;
 };
 
-export const testAppStoreConnection = (data: FormData) => {
-  return axios.post('/api/appstore/store/testConnection', data, {
+export const testAppStoreConnection = async (data: FormData) => {
+  const resp = await axios.post<HttpResponse>('/api/appstore/store/testConnection', data, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   });
+  return resp.data;
 };
 
 export const addAppStore = async (data: FormData) => {
-  return axios.post(`/api/appstore/store`, data,
+  const resp = await axios.post(`/api/appstore/store`, data,
     { 
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     }
   );
+  return resp.data;
 };
 
 export const deleteAppStore = async (appstoreID: string) => {
-  return axios.delete(`/api/appstore/store/${appstoreID}`);
+  const resp = await axios.delete(`/api/appstore/store/${appstoreID}`);
+  return resp.data;
 };
 
 export const getHelmAppList = async (clusterID: string, namespace: string) => {
-  return axios.get(`/api/helm/apps/${clusterID}/${namespace}`);
+  const resp = await axios.get(`/api/helm/apps/${clusterID}/${namespace}`);
+  return resp.data;
 };
 
 export const getHelmApp = async (appName: string, clusterID: string, namespace: string) => {
-  return axios.get(`/api/helm/app/${clusterID}/${namespace}/${appName}`);
+  const resp = await axios.get(`/api/helm/app/${clusterID}/${namespace}/${appName}`);
+  return resp.data;
 };
 
 export const deleteHelmApp = async (appName: string, clusterID: string, namespace: string) => {
-  return axios.delete(`/api/helm/app/${clusterID}/${namespace}/${appName}`);
+  const resp = await axios.delete(`/api/helm/app/${clusterID}/${namespace}/${appName}`);
+  return resp.data;
 };
 
 export const postHelmAppInstall = async (appname: string, chartname: string, chartversion: string, chartrepo: string, clusterid: string, namespace: string, values: string) => {
-  return axios.post(
+  const resp = await axios.post(
     `/api/helm/app`,
     JSON.stringify({
       appname: `${appname}`,
@@ -149,6 +165,7 @@ export const postHelmAppInstall = async (appname: string, chartname: string, cha
       }
     }
   );
+  return resp.data;
 }
 
 export function getNodeList() {

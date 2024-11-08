@@ -76,10 +76,10 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
-import { AxiosResponse } from 'axios';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import api, { getAppStoreList, testAppStoreConnection, addAppStore, deleteAppStore, HttpResponse} from '@/api/cluster';
+import api, { getAppStoreList, testAppStoreConnection, addAppStore, deleteAppStore} from '@/api/cluster';
+import { HttpResponse } from '@/api/http';
 import useLoading from '@/hooks/loading';
 import { Message } from '@arco-design/web-vue';
 
@@ -109,7 +109,7 @@ const curAppStore = reactive({
 
 const fetchAppStores = async () => {
   try {
-    const result = await getAppStoreList();
+    const result:HttpResponse = await getAppStoreList();
     appStores.value = result.data;
     console.log(appStores.value);
   } catch (error) {

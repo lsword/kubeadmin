@@ -310,7 +310,7 @@
   const fetchClusterNamespace = async () => {
     if (!clusterStore.id) return;
     const clusterNamespacesData = await getNamespaces(clusterStore.id);
-    namespaces.value = clusterNamespacesData.data;
+    namespaces.value = clusterNamespacesData.data as string[];
   };
 
   watch(curNamespace, () => {

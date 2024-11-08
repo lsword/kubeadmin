@@ -52,7 +52,8 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useClusterStore } from '@/store';
-import { getHelmAppList, deleteHelmApp, HttpResponse } from '@/api/cluster';
+import { getHelmAppList, deleteHelmApp } from '@/api/cluster';
+import type { HttpResponse } from '@/api/http';
 import useLoading from '@/hooks/loading';
 
 import date from '@/utils/date';

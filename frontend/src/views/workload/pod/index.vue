@@ -83,7 +83,7 @@ const fetchPodDetail = async () => {
 
   try {
     const result = await api.getPodDetail(clusterStore.id!, clusterStore.curNamespace!, podname.value);
-    k8sPod.value = result.data;
+    k8sPod.value = result.data as K8sPod;
   } catch (error) {
     console.error('Failed to fetch pod details:', error);
   }

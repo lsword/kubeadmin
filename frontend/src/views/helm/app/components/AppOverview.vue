@@ -45,7 +45,8 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import useLoading from '@/hooks/loading';
-import api, { Cluster, K8sPod, getHelmApp, HttpResponse } from '@/api/cluster';
+import api, { Cluster, K8sPod, getHelmApp } from '@/api/cluster';
+import type { HttpResponse } from '@/api/http';
 
 const { loading, setLoading } = useLoading(true);
 
@@ -76,7 +77,7 @@ const fetchHelmApp = async () => {
     // const currentTime = new Date();
     // const podCreateTime = pod.metadata && pod.metadata.creationTimestamp ? date.formatTimeDiff(new Date(pod.metadata.creationTimestamp),currentTime) : '';
     helmApp.value = result.data;
-    result.data.forEach(
+    (result.data as any[]).forEach(
       (item: {
         [x: string]: any;
         kind: string;

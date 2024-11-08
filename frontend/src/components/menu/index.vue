@@ -31,6 +31,7 @@
       const selectedKey = ref<string[]>([]);
 
       const routeMappings: any = {
+        'cluster': { name: 'cluster.overview'},
         'appstore': { name: 'appstore.storelist'},
         'helm': { name: 'helm.applist'},
       };

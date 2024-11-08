@@ -15,7 +15,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useClusterStore } from '@/store';
-import api from '@/api/cluster'; // Import your API functions
+import api, { Cluster } from '@/api/cluster'; // Import your API functions
 
 const router = useRouter();
 
@@ -41,7 +41,7 @@ const fetchClusterOverview = async () => {
   checkStoreData();
   try {
     const result = await api.getClusterOverview(clusterStore.id as string);
-    cluster.value = result.data;
+    cluster.value = result.data as Cluster;
     console.log(result.data);
   } catch (error) {
     console.error('Failed to fetch cluster details:', error);

@@ -2,8 +2,8 @@ import { DEFAULT_LAYOUT } from '../base';
 import { AppRouteRecordRaw } from '../types';
 
 const WORKLOAD: AppRouteRecordRaw = {
-  path: '/clusteroverview',
-  name: 'clusteroverview',
+  path: '/cluster',
+  name: 'cluster',
   component: DEFAULT_LAYOUT,
   meta: {
     locale: 'menu.clusteroverview',
@@ -15,13 +15,13 @@ const WORKLOAD: AppRouteRecordRaw = {
   },
   children: [
     {
-      path: '/clusteroverview',
-      name: 'clusteroverview',
+      path: 'overview',
+      name: 'cluster.overview',
       component: () => import('@/views/clusteroverview/index.vue'),
       meta: {
         locale: 'menu.clusteroverview',
         requiresAuth: true,
-        activeMenu: 'clusteroverview',
+        activeMenu: 'cluster',
         roles: ['*'],
         title: '工作负载-POD',
         hideInMenu: true,
