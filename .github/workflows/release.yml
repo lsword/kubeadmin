@@ -12,6 +12,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Delete Existing Release
+      if: ${{ github.event.release.tag_name }}
+      run: |
+        RELEASE_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ github.event.release.tag_name }}" | jq -r .id)
+        if [ "$RELEASE_ID" != "null" ]; then
+          curl -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID"
+          git push --delete origin ${{ github.event.release.tag_name }}
+        fi
+
     - name: Download Helm 3.16.2
       run: |
         mkdir -p backend/bin
