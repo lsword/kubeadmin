@@ -41,6 +41,7 @@ jobs:
 
 
     - name: Build macOS app
+      working-directory: desktop
       env:
         ELECTRON_BUILDER_CACHE: '/tmp/electron-builder-cache'  # Override cache location
         ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: 'true'  # Allow unresolved dependencies
