@@ -76,9 +76,11 @@ jobs:
         prerelease: false
 
     - name: Upload Release Asset
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: kubeadmin-mac.dmg
-        path: desktop/dist/
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: desktop/dist/
+        asset_name: kubeadmin-mac.dmg  # Name your asset
+        asset_content_type: application/octet-stream
