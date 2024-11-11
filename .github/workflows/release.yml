@@ -25,8 +25,20 @@ jobs:
       with:
         node-version: '16'  # Ensure this matches your project's Node.js version
 
-    - name: Install dependencies
+    - name: Install and Build Frontend
+      working-directory: frontend
+      run: |
+        npm install
+        npm run build
+
+    - name: Install Backend Dependencies
+      working-directory: backend
       run: npm install
+
+    - name: Install Desktop Dependencies
+      working-directory: desktop
+      run: npm install
+
 
     - name: Build macOS app
       env:
