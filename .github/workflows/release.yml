@@ -1,0 +1,62 @@
+name: Build and Release macOS App
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Download Helm 3.16.2
+      run: |
+        mkdir -p backend/bin
+        curl -L https://get.helm.sh/helm-v3.16.2-darwin-amd64.tar.gz -o helm.tar.gz
+        tar -zxvf helm.tar.gz
+        mv darwin-amd64/helm backend/bin/helm
+        rm -rf darwin-amd64 helm.tar.gz
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'  # Ensure this matches your project's Node.js version
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build macOS app
+      env:
+        ELECTRON_BUILDER_CACHE: '/tmp/electron-builder-cache'  # Override cache location
+        ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: 'true'  # Allow unresolved dependencies
+      run: npm run pack:mac
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: macOS-app
+        path: dist/*.dmg  # Adjust the path if your output is different
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.event.release.tag_name }}
+        release_name: ${{ github.event.release.name }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: dist/*.dmg  # Adjust the path if your output is different
+        asset_name: kubeadmin-mac.dmg  # Name your asset
+        asset_content_type: application/octet-stream
