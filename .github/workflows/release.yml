@@ -49,10 +49,9 @@ jobs:
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3
-      working-directory: desktop
       with:
         name: macOS-app
-        path: dist/*.dmg  # Adjust the path if your output is different
+        path: desktop/dist/*.dmg  # Adjust the path if your output is different
 
     - name: Create Release
       id: create_release
