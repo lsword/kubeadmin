@@ -81,6 +81,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: desktop/dist/
-        asset_name: kubeadmin-mac.dmg  # Name your asset
+        asset_path: desktop/dist/*.dmg
+        asset_name: *.dmg  # Name your asset
         asset_content_type: application/octet-stream

@@ -15,6 +15,7 @@
   "build": {
     "appId": "com.lsword.kubeadmin",
     "asar": false,
+    "artifactName": "${name}-${version}-${os}-${arch}.${ext}",
     "files": [
       "electron/main.js",
       "!../kubeadmin.db"
