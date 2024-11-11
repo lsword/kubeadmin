@@ -52,7 +52,7 @@ jobs:
       with:
         name: macOS-app
         path: desktop/dist/*.dmg  # Adjust the path if your output is differen
-        
+
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -65,11 +65,9 @@ jobs:
         prerelease: false
 
     - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
+      uses: actions/upload-artifact@v4
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: desktop/dist/*.dmg  # Adjust the path if your output is different
-        asset_name: kubeadmin-mac.dmg  # Name your asset
-        asset_content_type: application/octet-stream
+        name: kubeadmin-mac.dmg
+        path: desktop/dist/
