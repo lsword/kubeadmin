@@ -10,48 +10,9 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Download Helm 3.16.2
-      run: |
-        mkdir -p backend/bin
-        curl -L https://get.helm.sh/helm-v3.16.2-darwin-amd64.tar.gz -o helm.tar.gz
-        tar -zxvf helm.tar.gz
-        mv darwin-amd64/helm backend/bin/helm
-        rm -rf darwin-amd64 helm.tar.gz
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '22'  # Ensure this matches your project's Node.js version
-
-    - name: Install and Build Frontend
-      working-directory: frontend
-      run: |
-        npm install
-        npm run build
-
-    - name: Install Backend Dependencies
-      working-directory: backend
-      run: npm install
-
-    - name: Install Desktop Dependencies
-      working-directory: desktop
-      run: npm install
+      uses: actions/checkout@v4
 
 
-    - name: Build macOS app
-      working-directory: desktop
-      env:
-        ELECTRON_BUILDER_CACHE: '/tmp/electron-builder-cache'  # Override cache location
-        ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: 'true'  # Allow unresolved dependencies
-      run: npm run pack:mac
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: macOS-app
-        path: desktop/dist/*.dmg  # Adjust the path if your output is different
 
     - name: Create Release
       id: create_release
