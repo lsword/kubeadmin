@@ -1,12 +1,19 @@
-name: Build and Release macOS App
+name: Build and upload Windows app artifact
 
 on:
-  release:
-    types: [created]
+  workflow_dispatch:
+    inputs:
+      buildBranch:
+        description: 'kubeadmin ref/branch/tag'
+        required: true
+        default: 'main'
+
+permissions:
+  contents: read
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: windows-latest
 
     steps:
     - name: Checkout code
@@ -15,7 +22,7 @@ jobs:
     - name: Download Helm 3.16.2
       run: |
         mkdir -p backend/bin
-        curl -L https://get.helm.sh/helm-v3.16.2-darwin-amd64.tar.gz -o helm.tar.gz
+        curl -L https://get.helm.sh/helm-v3.16.2-windows-amd64.tar.gz -o helm.tar.gz
         tar -zxvf helm.tar.gz
         mv darwin-amd64/helm backend/bin/helm
         rm -rf darwin-amd64 helm.tar.gz
@@ -39,11 +46,10 @@ jobs:
       working-directory: desktop
       run: npm install
 
-    - name: Build macOS app
+    - name: Build Windows app
       working-directory: desktop
       env:
         ELECTRON_BUILDER_CACHE: '/tmp/electron-builder-cache'  # Override cache location
         ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: 'true'  # Allow unresolved dependencies
         GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      run: npm run pack:mac:publish
-
+      run: npm run pack:win:publish
