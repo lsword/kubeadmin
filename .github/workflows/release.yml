@@ -48,5 +48,6 @@ jobs:
       env:
         ELECTRON_BUILDER_CACHE: '/tmp/electron-builder-cache'  # Override cache location
         ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: 'true'  # Allow unresolved dependencies
+        GH_TOKEN: ${{secrets.GH_TOKEN}}
       run: npm run pack:mac:publish
 
