@@ -1,6 +1,6 @@
 dist
 node_modules
-kubeadmin.db
+*.db
 backend/static
 backend/tmp
 backend/bin

@@ -22,10 +22,6 @@
     ],
     "extraResources": [
       {
-        "from": "../frontend/dist",
-        "to": "frontend"
-      },
-      {
         "from": "../backend",
         "to": "backend"
       }

@@ -40,10 +40,17 @@ module.exports = db;
 const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 const path = require('path');
+const fs = require('fs');
 
 async function kubeadminDB() {
+  const dbPath = path.resolve(__dirname, 'kubeadmin.db');
+
+  if (!fs.existsSync(dbPath)) {
+    fs.writeFileSync(dbPath, '');
+  }
+
   const db = await open({
-    filename: path.resolve(__dirname, 'kubeadmin.db'),
+    filename: dbPath,
     driver: sqlite3.Database
   });
 

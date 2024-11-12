@@ -173,6 +173,7 @@ exports.getClusters = async (ctx) => {
       data: clusters
     };
   } catch (error) {
+    console.log(error);
     ctx.status = 500;
     ctx.body = {
       status: 500,
@@ -225,6 +226,7 @@ exports.getCluster = async (ctx) => {
       data: data,
     };
   } catch (error) {
+    console.log(error)
     ctx.status = 500;
     ctx.body = {
       status: 500,
