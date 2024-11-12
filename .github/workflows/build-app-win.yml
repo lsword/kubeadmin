@@ -24,7 +24,7 @@ jobs:
         curl -L https://get.helm.sh/helm-v3.16.2-windows-amd64.zip -o helm.zip 
         tar -xf helm.zip
         move windows-amd64\helm.exe backend\bin\helm
-        rmdir /S /Q windows-amd64
+        rd /s /q windows-amd64
         del helm.zip
 
     - name: Set up Node.js
