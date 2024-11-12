@@ -58,6 +58,10 @@ jobs:
         ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: 'true'  # Allow unresolved dependencies
       run: npm run pack:mac
 
+    - name: Get Artifact Name
+      id: get_artifact_name
+      run: echo "ARTIFACT_NAME=$(node -p \"require('./desktop/package.json').build.artifactName.replace('\${version}', require('./desktop/package.json').version).replace('\${arch}', 'arm64')\")" >> $GITHUB_ENV
+
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
@@ -81,6 +85,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: desktop/dist/kubeadmin-1.0.0-mac-arm64.dmg
-        asset_name: kubeadmin-1.0.0-mac-arm64.dmg  # Name your asset
+        asset_path: desktop/dist/${{ env.ARTIFACT_NAME }}
+        asset_name: ${{ env.ARTIFACT_NAME }}
         asset_content_type: application/octet-stream
