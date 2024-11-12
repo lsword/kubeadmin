@@ -23,7 +23,7 @@ jobs:
       run: |
         curl -L https://get.helm.sh/helm-v3.16.2-windows-amd64.tar.gz -o helm.tar.gz
         tar -zxvf helm.tar.gz
-        mv windows-amd64/helm backend/bin/helm
+        mv windows-amd64/helm.exe backend/bin/helm
         rm -rf windows-amd64 helm.tar.gz
 
     - name: Set up Node.js
