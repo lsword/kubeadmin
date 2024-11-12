@@ -12,17 +12,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Delete Existing Release
-      if: ${{ github.event.release.tag_name }}
-      run: |
-        RELEASE_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ github.event.release.tag_name }}" | jq -r .id)
-        if [ "$RELEASE_ID" != "null" ]; then
-          curl -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID"
-          git push --delete origin ${{ github.event.release.tag_name }}
-        fi
-
     - name: Download Helm 3.16.2
       run: |
         mkdir -p backend/bin
@@ -56,35 +45,5 @@ jobs:
       env:
         ELECTRON_BUILDER_CACHE: '/tmp/electron-builder-cache'  # Override cache location
         ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: 'true'  # Allow unresolved dependencies
-      run: npm run pack:mac
+      run: npm run pack:mac:publish
 
-    - name: Get Artifact Name
-      id: get_artifact_name
-      run: echo "ARTIFACT_NAME=$(node -p \"require('./desktop/package.json').build.artifactName.replace('\${version}', require('./desktop/package.json').version).replace('\${arch}', 'arm64')\")" >> $GITHUB_ENV
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: macOS-app
-        path: desktop/dist/*.dmg  # Adjust the path if your output is differen
-
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.event.release.tag_name }}
-        release_name: ${{ github.event.release.name }}
-        draft: false
-        prerelease: false
-
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: desktop/dist/${{ env.ARTIFACT_NAME }}
-        asset_name: ${{ env.ARTIFACT_NAME }}
-        asset_content_type: application/octet-stream
