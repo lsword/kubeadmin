@@ -21,7 +21,6 @@ jobs:
 
     - name: Download Helm 3.16.2
       run: |
-        mkdir -p backend/bin
         curl -L https://get.helm.sh/helm-v3.16.2-windows-amd64.tar.gz -o helm.tar.gz
         tar -zxvf helm.tar.gz
         mv darwin-amd64/helm backend/bin/helm
