@@ -8,9 +8,6 @@ jobs:
   build:
     runs-on: macos-latest
 
-    env:
-      GH_TOKEN: ${{secrets.GH_TOKEN}}
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -48,6 +45,6 @@ jobs:
       env:
         ELECTRON_BUILDER_CACHE: '/tmp/electron-builder-cache'  # Override cache location
         ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: 'true'  # Allow unresolved dependencies
-        GH_TOKEN: ${{secrets.GH_TOKEN}}
+        GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       run: npm run pack:mac:publish
 
