@@ -3,7 +3,7 @@ const { customAlphabet } = require('nanoid');
 const { kubeadminDB, getClusterById } = require('../db');
 const fs = require('fs');
 const K8sService = require('../services/k8sService');
-
+const logger = require('../utils/logger');
 
 const nanoid = customAlphabet('abcdefghigklmnopqrstuvwxyz', 10)
 
@@ -20,6 +20,7 @@ getClusterInfo = async (config) => {
       address: kc.getCurrentCluster().server
     };
   } catch (error) {
+    logger.error(`getClusterInfo failed: ${error}`);
     return null;
   }
 }
@@ -39,6 +40,7 @@ getClusterNamespaces = async (config) => {
     });
     return data;
   } catch (error) {
+    logger.error(`getClusterNamespaces failed: ${error}`);
     return [];
   }
 }
@@ -144,6 +146,8 @@ exports.addCluster = async (ctx) => {
       [clusterId, name, config, clusterInfo.address, clusterInfo.version, createdAt]
     );
 
+    logger.info(`addCluster successed`);
+
     ctx.body = {
       status: 200,
       msg: 'Cluster added successfully.',
@@ -151,6 +155,7 @@ exports.addCluster = async (ctx) => {
       data: { id: clusterId, name, createdAt }
     };
   } catch (error) {
+    logger.error(`addCluster failed: ${error}`);
     ctx.status = 500;
     ctx.body = {
       status: 500,
@@ -165,7 +170,7 @@ exports.getClusters = async (ctx) => {
   try {
     const db = await kubeadminDB();
     const clusters = await db.all('SELECT id, name, address, version, created_at FROM clusters');
-
+    logger.info(`getClusters successed`);
     ctx.body = {
       status: 200,
       msg: 'Clusters retrieved successfully.',
@@ -173,7 +178,8 @@ exports.getClusters = async (ctx) => {
       data: clusters
     };
   } catch (error) {
-    console.log(error);
+    console.log(error)
+    logger.error(`getClusters failed: ${error}`);
     ctx.status = 500;
     ctx.body = {
       status: 500,
@@ -226,7 +232,7 @@ exports.getCluster = async (ctx) => {
       data: data,
     };
   } catch (error) {
-    console.log(error)
+    logger.error(`getCluster failed: ${error}`);
     ctx.status = 500;
     ctx.body = {
       status: 500,
