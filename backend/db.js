@@ -41,6 +41,7 @@ const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 const path = require('path');
 const fs = require('fs');
+const logger = require('./utils/logger');
 
 async function kubeadminDB() {
   const dbPath = path.resolve(__dirname, 'kubeadmin.db');
@@ -86,6 +87,7 @@ getClusterById = async (clusterId) => {
     const cluster = await db.get('SELECT id, name, config, address, version, created_at FROM clusters WHERE id = ?', clusterId);
     return cluster;
   } catch (error) {
+    logger.error(`getClusterById${clusterId} failed: ${error}`);
     return null;
   }
 }
@@ -96,6 +98,7 @@ getAppStoreById = async (appstoreId) => {
     const appstore = await db.get('SELECT id, name, type, address FROM appstore WHERE id = ?', appstoreId);
     return appstore;
   } catch (error) {
+    logger.error(`getAppStoreById${appstoreId} failed: ${error}`);
     return null;
   }
 }
@@ -106,6 +109,7 @@ getImageStoreById = async (imagestoreId) => {
     const imagestore = await db.get('SELECT id, name, type, address FROM imagestore WHERE id = ?', imagestoreId);
     return imagestore;
   } catch (error) {
+    logger.error(`getImageStoreById${imagestoreId} failed: ${error}`);
     return null;
   }
 }
