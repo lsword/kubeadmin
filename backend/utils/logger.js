@@ -13,8 +13,9 @@ const logger = createLogger({
   ),
   defaultMeta: { service: 'user-service' },
   transports: [
-    new transports.File({ filename: path.resolve(__dirname, 'logs', 'error.log'), level: 'error' }),
-    new transports.File({ filename: path.resolve(__dirname, 'logs', 'combined.log') })
+    new transports.File({ filename: path.resolve(__dirname, '../logs', 'error.log'), level: 'error' }),
+    new transports.File({ filename: path.resolve(__dirname, '../logs', 'info.log'), level: 'info' }),
+    new transports.File({ filename: path.resolve(__dirname, '../logs', 'combined.log') })
   ]
 });
 
