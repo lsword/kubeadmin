@@ -15,8 +15,7 @@ getClusterInfo = async (config) => {
     const k8sApi = kc.makeApiClient(k8s.VersionApi);
     const versionResponse = await k8sApi.getCode();
 
-    logger.info(`getClusterInfo ok: ${versionResponse.body}`);
-    
+    logger.info(`getClusterInfo ok: ${kc.getCurrentCluster().server}, ${versionResponse.body.gitVersion}`);
     return {
       version: versionResponse.body.gitVersion,
       address: kc.getCurrentCluster().server
