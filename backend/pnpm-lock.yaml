@@ -26,6 +26,9 @@ dependencies:
   koa-router:
     specifier: ^13.0.1
     version: 13.0.1
+  koa-send:
+    specifier: ^5.0.1
+    version: 5.0.1
   koa-static:
     specifier: ^5.0.0
     version: 5.0.0

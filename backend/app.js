@@ -1,6 +1,7 @@
 const Koa = require('koa');
 const Router = require('koa-router');
 const serve = require('koa-static');
+const send = require('koa-send');
 const path = require('path');
 const k8sClusterRoutes = require('./routes/k8sCluster');
 const appStoreRoutes = require('./routes/appStore');
@@ -20,13 +21,19 @@ app.use(async (ctx, next) => {
   }
 });
 
-app.use(serve(path.join(__dirname, './static')));
-
 const router = new Router();
 router.use('/api/k8s', k8sClusterRoutes.routes());
 router.use('/api/appstore', appStoreRoutes.routes());
 router.use('/api/helm', helmRoutes.routes());
 app.use(router.routes()).use(router.allowedMethods());
 
+app.use(serve(path.join(__dirname, './static')));
+app.use(async (ctx, next) => {
+  if (ctx.status === 404 && ctx.method === 'GET') {
+    await send(ctx, 'index.html', { root: path.join(__dirname, './static') });
+  } else {
+    await next();
+  }
+});
 
 module.exports = app;
