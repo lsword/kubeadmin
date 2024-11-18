@@ -14,8 +14,6 @@
   "dependencies": {
     "@kubernetes/client-node": "^0.22.1",
     "axios": "^1.7.7",
-    "better-sqlite3": "^11.3.0",
-    "compressing": "^1.10.1",
     "koa": "^2.15.3",
     "koa-body": "^6.0.1",
     "koa-router": "^13.0.1",
