@@ -3,10 +3,10 @@ name: Build and upload docker image artifact
 on:
   workflow_dispatch:
     inputs:
-      buildBranch:
-        description: 'kubeadmin ref/branch/tag'
+      tag:
+        description: 'Select a tag to build'
         required: true
-        default: 'main'
+        default: 'v1.0.0'
 
 env:
   REGISTRY: ghcr.io
