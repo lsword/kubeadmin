@@ -1,0 +1,29 @@
+name: Build and upload docker image artifact
+
+on:
+  workflow_dispatch:
+    inputs:
+      buildBranch:
+        description: 'kubeadmin ref/branch/tag'
+        required: true
+        default: 'main'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: lsword/kubeadmin
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Print Selected Tag
+      run: echo "The selected tag is ${{ github.event.inputs.tag }}"
+
+    - name: Use Selected Tag
+      run: |
+        echo "Using tag ${{ github.event.inputs.tag }} for the build process"
+        # Add your build commands here, using the selected tag as needed
