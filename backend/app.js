@@ -6,6 +6,7 @@ const path = require('path');
 const k8sClusterRoutes = require('./routes/k8sCluster');
 const appStoreRoutes = require('./routes/appStore');
 const helmRoutes = require('./routes/helm');
+const metricsRoutes = require('./routes/metrics');
 const logger = require('./utils/logger');
 
 const app = new Koa();
@@ -25,6 +26,7 @@ const router = new Router();
 router.use('/api/k8s', k8sClusterRoutes.routes());
 router.use('/api/appstore', appStoreRoutes.routes());
 router.use('/api/helm', helmRoutes.routes());
+router.use('/api/metrics', metricsRoutes.routes());
 app.use(router.routes()).use(router.allowedMethods());
 
 app.use(serve(path.join(__dirname, './static')));
