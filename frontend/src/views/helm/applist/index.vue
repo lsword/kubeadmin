@@ -76,7 +76,6 @@ const fetchHelmApps = async () => {
   checkStoreData();
   try {
     const result: HttpResponse = await getHelmAppList(clusterStore.id!, clusterStore.curNamespace!);
-    console.log(result.msg);
     // const currentTime = new Date();
     // const podCreateTime = pod.metadata && pod.metadata.creationTimestamp ? date.formatTimeDiff(new Date(pod.metadata.creationTimestamp),currentTime) : '';
     helmApps.value = result.data;

@@ -119,6 +119,11 @@ export const postHelmAppInstall = async (appname: string, chartname: string, cha
   return resp.data;
 }
 
+export const getNameSpaceMetrics = async (clusterID: string, namespace: string) => {
+  const resp = await axios.get(`/api/metrics/namespace/${clusterID}/${namespace}`);
+  return resp.data;
+};
+
 export function getNodeList() {
   return null;
 }
@@ -134,4 +139,5 @@ export default {
   getPodList, 
   getPodDetail, 
   getHelmAppList, 
+  getNameSpaceMetrics,
  };

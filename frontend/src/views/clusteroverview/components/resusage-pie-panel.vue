@@ -29,7 +29,7 @@
     return {
       legend: {
         left: 'center',
-        data: ['纯文本', '图文类', '视频类'],
+        data: ['app', 'pod'],
         bottom: 0,
         icon: 'circle',
         itemWidth: 8,
@@ -51,7 +51,7 @@
             left: 'center',
             top: '40%',
             style: {
-              text: 'CPU',
+              text: props.resType,
               textAlign: 'center',
               fill: isDark ? '#ffffffb3' : '#4E5969',
               fontSize: 14,
@@ -73,7 +73,7 @@
       },
       series: [
         {
-          name: 'CPU of',
+          name: "app",
           type: 'pie',
           selectedMode: 'single',
           radius: ['0%', '50%'],
@@ -89,7 +89,7 @@
           data: props.appData,
         },
         {
-          name: 'CPU of',
+          name: "pod",
           type: 'pie',
           radius: ['65%', '90%'],
           center: ['50%', '50%'],

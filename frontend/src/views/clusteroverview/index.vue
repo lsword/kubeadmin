@@ -2,10 +2,6 @@
   <div class="container">
     <div class="layout">
       <a-card style="height: auto;"  id="container">
-        <h1>{{ cluster.name }}</h1>
-        <p><strong>ID:</strong> {{ cluster.id }}</p>
-        <p><strong>Status:</strong> {{ cluster.status }}</p>
-        <p><strong>Created At:</strong> {{ cluster.created_at }}</p>
         <div v-if="loading">
         </div>
         <div v-else>
@@ -67,7 +63,7 @@
                 <a-grid-item
                   :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
                 >
-                  <ResCPUUsagePiePanel resType="cpu" title="cpu" :appData="appCpuData" :podData="podCpuData" />
+                  <ResUsagePiePanel resType="cpu" title="cpu" :appData="appCpuData" :podData="podCpuData" />
                 </a-grid-item>
                 <a-grid-item
                   :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
@@ -84,12 +80,12 @@
                 <a-grid-item
                   :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
                 >
-                  <ResCPUUsagePiePanel resType="cpu" title="cpu" :appData="appCpuData" :podData="podCpuData" />
+                  <ResUsagePiePanel resType="mem" title="mem" :appData="appMemData" :podData="podMemData" />
                 </a-grid-item>
                 <a-grid-item
                   :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
                 >
-                  <ResUsageBarPanel resType="cpu" title="cpu" :appData="appCpuData" :podData="podCpuData" />
+                  <ResUsageBarPanel resType="mem" title="mem" :appData="appMemData" :podData="podMemData" />
                 </a-grid-item>
               </a-grid>
             </a-card>
@@ -109,8 +105,8 @@ import useLoading from '@/hooks/loading';
 
 import DataPanel from './components/data-panel.vue';
 import ChainItem from './components/chart-item.vue';
-import ResUsagePiePannel from './components/resusage-pie-panel.vue';
-import ResUsageBarPannel from './components/resusage-bar-panel.vue';
+import ResUsagePiePanel from './components/resusage-pie-panel.vue';
+import ResUsageBarPanel from './components/resusage-bar-panel.vue';
 
 const { loading, setLoading } = useLoading();
 
@@ -123,23 +119,12 @@ const theme = computed(() => {
   return appStore.theme;
 });
 
-
-const cluster = ref({
-  id: '',
-  name: '',
-  status: '',
-  created_at: '',
-  // Add more fields as needed
-});
-
 const appChartData = ref<any>([]);
 const podChartData = ref<any>([]);
 const appCpuData = ref<any>([]);
 const podCpuData = ref<any>([]);
 const appMemData = ref<any>([]);
 const podMemData = ref<any>([]);
-
-
 
 const nsAppNum = ref(0);
 const nsPodNum = ref(0);
@@ -160,23 +145,32 @@ const checkStoreData = () => {
   }
 }
 
-const fetchClusterOverview = async () => {
-  // const clusterId = route.params.id as string;
-  console.log(router.currentRoute.value.name)
-  checkStoreData();
-  try {
-    const result = await api.getClusterOverview(clusterStore.id as string);
-    cluster.value = result.data as Cluster;
-    console.log(result.data);
-  } catch (error) {
-    console.error('Failed to fetch cluster details:', error);
+const fetchNamespaceMetrics = async (clusterid: string, namespace: string) => {
+  const metrics = await api.getNameSpaceMetrics(clusterid, namespace);
+    
+  appCpuData.value = [];
+  appMemData.value = [];
+  podCpuData.value = [];
+  podMemData.value = [];
+
+  if (metrics.data) {
+    metrics.data.forEach((appMetrics: any) => {
+      appCpuData.value.push({ value: appMetrics.cpu, name: appMetrics.name })
+      appMemData.value.push({ value: appMetrics.mem, name: appMetrics.name })
+      appMetrics.pods.forEach((podMetrics: any)=>{
+        podCpuData.value.push({ value: podMetrics.cpu, name: podMetrics.name })
+        podMemData.value.push({ value: podMetrics.mem, name: podMetrics.name })
+      })
+    })
   }
 };
 
 onMounted(() => {
-  fetchClusterOverview();
+  fetchNamespaceMetrics(clusterStore.id, clusterStore.curNamespace);
 });
-
+clusterStore.$subscribe((mutation, state) => {
+  fetchNamespaceMetrics(clusterStore.id, clusterStore.curNamespace);
+})
 </script>
 
 <style lang="less" scoped>

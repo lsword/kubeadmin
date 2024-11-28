@@ -15,7 +15,7 @@
 <script lang="ts" setup>
   import useLoading from '@/hooks/loading';
   import useChartOption from '@/hooks/chart-option';
-  import {ref, toRefs} from 'vue';
+  import {ref, toRefs, watch} from 'vue';
 
   const props = defineProps({
     appData: Array,
@@ -29,10 +29,20 @@
   const xData = ref<any>([]);
   const yData = ref<any>([]);
   const { podData } = toRefs(props);
+
   podData?.value?.forEach((data: any)=>{
     xData.value.push(data.value);
     yData.value.push(data.name);
   })
+
+  watch(()=>props.podData, (newValue, oldValue) => {
+    xData.value = [];
+    yData.value = [];
+    newValue.forEach((data:any) => {
+      xData.value.push(data.value);
+      yData.value.push(data.name);
+    })
+  });
 
   const { chartOption } = useChartOption((isDark) => {
     return {
