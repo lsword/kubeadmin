@@ -124,6 +124,11 @@ export const getNameSpaceMetrics = async (clusterID: string, namespace: string) 
   return resp.data;
 };
 
+export const getNameSpaceResources = async (clusterID: string, namespace: string) => {
+  const resp = await axios.get(`/api/k8s/resources/${clusterID}/${namespace}`);
+  return resp.data;
+};
+
 export function getNodeList() {
   return null;
 }
@@ -140,4 +145,5 @@ export default {
   getPodDetail, 
   getHelmAppList, 
   getNameSpaceMetrics,
+  getNameSpaceResources,
  };

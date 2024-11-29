@@ -165,12 +165,77 @@ const fetchNamespaceMetrics = async (clusterid: string, namespace: string) => {
   }
 };
 
+const fetchNamespaceTotalResources = async (clusterid: string, namespace: string) => {
+  try {
+    const appStatusData:{
+      deployed: number;
+      failed: number;
+      pending: number;
+      superseded: number;
+      uninstalling: number;
+    }={deployed:0, failed:0, pending:0, superseded:0, uninstalling:0};
+    const podStatusData:{
+      pending: number;
+      running: number;
+      succeeded: number;
+      failed: number;
+      unknown: number;
+    }={pending:0, running:0, succeeded:0, failed:0, unknown:0};
+
+    setLoading(true);
+    const totalResources = await api.getNameSpaceResources(clusterid, namespace);
+    totalResources.data.apps.forEach((appMetrics: any)=>{
+      if (appMetrics.status === 'deployed') appStatusData.deployed +=1;
+      if (appMetrics.status === 'failed') appStatusData.failed +=1;
+      if (appMetrics.status === 'pending') appStatusData.pending +=1;
+      if (appMetrics.status === 'superseded') appStatusData.superseded +=1;
+      if (appMetrics.status === 'uninstalling') appStatusData.uninstalling +=1;
+      });
+
+      totalResources.data.pods.forEach((podMetrics: any)=>{
+        if (podMetrics.status.phase === 'Pending') podStatusData.pending +=1;
+        else if (podMetrics.status.phase === 'Running') podStatusData.running +=1;
+        else if (podMetrics.status.phase === 'Succeeded') podStatusData.succeeded +=1;
+        else if (podMetrics.status.phase === 'Failed') podStatusData.failed +=1;
+        else if (podMetrics.status.phase === 'Unknown') podStatusData.unknown +=1;
+        else podStatusData.unknown +=1;
+      })
+    appChartData.value.push({ value: appStatusData.deployed, name: 'deployed', itemStyle: {color: "#00B42A"}})
+    appChartData.value.push({ value: appStatusData.failed, name: 'failed', itemStyle: {color: "#F77234"}})
+    appChartData.value.push({ value: appStatusData.pending, name: 'pending', itemStyle: {color: "#3491FA"}})
+    appChartData.value.push({ value: appStatusData.superseded, name: 'superseded', itemStyle: {color: "#F7BA1E"}})
+    appChartData.value.push({ value: appStatusData.uninstalling, name: 'uninstalling', itemStyle: {color: "#14C9C9"}})
+    podChartData.value.push({ value: podStatusData.pending, name: 'pending', itemStyle: {color: "#3491FA"}})
+    podChartData.value.push({ value: podStatusData.running, name: 'running', itemStyle: {color: "#00B42A"}})
+    podChartData.value.push({ value: podStatusData.succeeded, name: 'succeeded', itemStyle: {color: "#F7BA1E"}})
+    podChartData.value.push({ value: podStatusData.failed, name: 'failed', itemStyle: {color: "#F77234"}})
+    podChartData.value.push({ value: podStatusData.unknown, name: 'unknown', itemStyle: {color: "#14C9C9"}})
+    nsPodNum.value = totalResources.data.pods.length;
+    nsAppNum.value = totalResources.data.apps.length;
+    nsServiceNum.value = totalResources.data.service;
+    nsPvcNum.value = totalResources.data.PVC;
+    nsDeploymentNum.value = totalResources.data.deployment;
+    nsDaemonsetNum.value = totalResources.data.daemonSet;
+    nsStatefulsetNum.value = totalResources.data.statefulSet;
+    nsIngressNum.value = totalResources.data.ingress;
+    nsConfigmapNum.value = totalResources.data.configmap;
+    nsSecretNum.value = totalResources.data.secret;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 onMounted(() => {
-  fetchNamespaceMetrics(clusterStore.id, clusterStore.curNamespace);
+  fetchNamespaceMetrics(clusterStore.id as string, clusterStore.curNamespace as string);
+  fetchNamespaceTotalResources(clusterStore.id as string, clusterStore.curNamespace as string);
 });
 clusterStore.$subscribe((mutation, state) => {
-  fetchNamespaceMetrics(clusterStore.id, clusterStore.curNamespace);
+  fetchNamespaceMetrics(clusterStore.id as string, clusterStore.curNamespace as string);
+  fetchNamespaceTotalResources(clusterStore.id as string, clusterStore.curNamespace as string);
 })
+
 </script>
 
 <style lang="less" scoped>

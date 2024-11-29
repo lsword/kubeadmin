@@ -2,7 +2,8 @@ const Router = require('koa-router');
 const koaBody = require('koa-body');
 const { uploadFile, 
   testConnection, addCluster, getClusters, deleteCluster, getCluster, getNamespaces, clusterOverview, 
-  getNamespacedPods, getNamespacedPodDetail
+  getNamespacedPods, getNamespacedPodDetail,
+  getNamespacedResources
 } = require('../controllers/k8sCluster');
 
 const router = new Router();
@@ -17,5 +18,6 @@ router.get('/namespaces/:clusterId', getNamespaces);
 router.get('/clusterOverview/:clusterId', clusterOverview); 
 router.get('/pods/:clusterId/:namespace', getNamespacedPods);
 router.get('/pod/:clusterId/:namespace/:podname', getNamespacedPodDetail);
+router.get('/resources/:clusterId/:namespace', getNamespacedResources);
 
 module.exports = router;

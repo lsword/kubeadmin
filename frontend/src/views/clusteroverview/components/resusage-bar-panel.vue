@@ -38,7 +38,7 @@
   watch(()=>props.podData, (newValue, oldValue) => {
     xData.value = [];
     yData.value = [];
-    newValue.forEach((data:any) => {
+    newValue?.forEach((data:any) => {
       xData.value.push(data.value);
       yData.value.push(data.name);
     })

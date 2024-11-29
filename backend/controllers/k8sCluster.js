@@ -7,6 +7,17 @@ const logger = require('../utils/logger');
 
 const nanoid = customAlphabet('abcdefghigklmnopqrstuvwxyz', 10)
 
+getK8sService = async(clusterId) => {
+  try {
+    const cluster = await getClusterById(clusterId);
+    if (!cluster) return null;
+    const k8sService = new K8sService(clusterId, cluster.config);
+    return k8sService;
+  } catch(error) {
+    return null;
+  }
+};
+
 getClusterInfo = async (config) => {
   try {
     const kc = new k8s.KubeConfig();
@@ -292,6 +303,44 @@ exports.deleteCluster = async (ctx) => {
 
 exports.getNamespaces = async (ctx) => {
   const { clusterId } = ctx.params;
+  if (!clusterId) {
+    ctx.body = {
+      code: -1,
+      msg: 'Cluster ID is required.',
+      data: null
+    };
+    return;
+  }
+
+  try {
+    const k8sService = await getK8sService(clusterId);
+    if (!k8sService) {
+      ctx.status = 200;
+      ctx.body = {
+        code: -1,
+        msg: 'Cluster not found.',
+        data: null
+      };
+      return;
+    }
+    
+    const namespaces = await k8sService.getNamespaceList();
+    ctx.status = 200;
+    ctx.body = {
+      code: -1,
+      msg: 'Cluster not found.',
+      data: namespaces
+    };
+  }
+  catch(error) {
+    ctx.status = 200;
+    ctx.body = {
+      code: -1,
+      msg: 'Cluster not found.',
+      data: null
+    };
+  }
+  /*
   const cluster = await getClusterById(clusterId);
   if (!cluster) {
     ctx.status = 400;
@@ -310,17 +359,16 @@ exports.getNamespaces = async (ctx) => {
     code: 20000,
     data: await getClusterNamespaces(cluster.config),
   };
+  */
 
 };
 
 exports.clusterOverview = async (ctx) => {
   const { clusterId } = ctx.params;
   if (!clusterId) {
-    ctx.status = 400;
     ctx.body = {
-      status: 400,
+      code: -1,
       msg: 'Cluster ID is required.',
-      code: 1009,
       data: null
     };
     return;
@@ -380,20 +428,18 @@ exports.getNamespacedPods = async (ctx) => {
   }
 
   try {
-    const cluster = await getClusterById(clusterId);
-    if (!cluster) {
-      ctx.status = 404;
+    const k8sService = await getK8sService(clusterId);
+    if (!k8sService) {
+      ctx.status = 200;
       ctx.body = {
-        status: 404,
+        code: -1,
         msg: 'Cluster not found.',
-        code: 1013,
         data: null
       };
       return;
     }
     
-    const k8sService = new K8sService(cluster.config);
-    const pods = await k8sService.listPods(namespace);
+    const pods = await k8sService.getPodList(namespace);
     ctx.body = {
       status: 200,
       msg: 'Pods retrieved successfully.',
@@ -426,19 +472,16 @@ exports.getNamespacedPodDetail = async (ctx) => {
   }
 
   try {
-    const cluster = await getClusterById(clusterId);
-    if (!cluster) {
-      ctx.status = 404;
+    const k8sService = await getK8sService(clusterId);
+    if (!k8sService) {
+      ctx.status = 200;
       ctx.body = {
-        status: 404,
+        code: -1,
         msg: 'Cluster not found.',
-        code: 1013,
         data: null
       };
       return;
     }
-    
-    const k8sService = new K8sService(cluster.config);
     const pods = await k8sService.getPodDetail(namespace, podname);
     ctx.body = {
       status: 200,
@@ -456,3 +499,48 @@ exports.getNamespacedPodDetail = async (ctx) => {
     };
   }
 };
+
+exports.getNamespacedResources = async (ctx) => {
+  const { clusterId, namespace } = ctx.params;
+
+  if (!clusterId || !namespace) {
+    ctx.status = 400;
+    ctx.body = {
+      status: 400,
+      msg: 'Cluster ID, namespace, and podname are required.',
+      code: 1012,
+      data: null
+    };
+    return;
+  }
+
+  try {
+    const k8sService = await getK8sService(clusterId);
+    if (!k8sService) {
+      ctx.status = 200;
+      ctx.body = {
+        code: -1,
+        msg: 'Cluster not found.',
+        data: null
+      };
+      return;
+    }
+    
+    const resources = await k8sService.getResources(clusterId, namespace);
+    
+    ctx.body = {
+      status: 200,
+      msg: 'Resources retrieved successfully.',
+      code: 20000,
+      data: resources
+    };
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = {
+      status: 500,
+      msg: 'Failed to retrieve pods.',
+      code: 1014,
+      data: { error: error.message }
+    };
+  }
+}

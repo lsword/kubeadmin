@@ -178,15 +178,14 @@
 
 <script lang="ts" setup>
 
-import PvcIcon from '@/assets/images/resources/pvc.svg';
-import CmIcon from '@/assets/images/resources/cm.svg';
-import DeployIcon from '@/assets/images/resources/deploy.svg';
-import DsIcon from '@/assets/images/resources/ds.svg';
-import IngIcon from '@/assets/images/resources/ing.svg';
-import SecretIcon from '@/assets/images/resources/secret.svg';
-import StsIcon from '@/assets/images/resources/sts.svg';
-import SvcIcon from '@/assets/images/resources/svc.svg';
-
+import PvcIcon from '@/assets/images/resources/pvc.svg?component';
+import CmIcon from '@/assets/images/resources/cm.svg?component';
+import DeployIcon from '@/assets/images/resources/deploy.svg?component';
+import DsIcon from '@/assets/images/resources/ds.svg?component';
+import IngIcon from '@/assets/images/resources/ing.svg?component';
+import SecretIcon from '@/assets/images/resources/secret.svg?component';
+import StsIcon from '@/assets/images/resources/sts.svg?component';
+import SvcIcon from '@/assets/images/resources/svc.svg?component';
 
 const props = defineProps({
   appNum: Number,
@@ -200,7 +199,6 @@ const props = defineProps({
   configmapNum: Number,
   secretNum: Number,
 })
-
 
 </script>
 

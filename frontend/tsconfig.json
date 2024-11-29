@@ -5,6 +5,8 @@
     "moduleResolution": "node",
     "strict": false,
     "jsx": "preserve",
+    "allowJs": true,
+    "checkJs": false,
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
@@ -13,8 +15,10 @@
       "@/*": ["src/*"]
     },
     "lib": ["es2020", "dom"],
+    "types": ["vite-svg-loader", "vite/client"],
     "skipLibCheck": true
   },
   "include": ["src/**/*", "src/**/*.vue"],
+  
   "exclude": ["node_modules"]
 }

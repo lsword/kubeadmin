@@ -8,9 +8,7 @@ const { getClusterConfigFile } = require('../utils/k8sConfig');
 class MetricsService {
   constructor(config) {
     this.kc = new k8s.KubeConfig();
-    console.log(config);
     this.kc.loadFromString(config);
-    // this.k8sMetricsClient = this.kc.makeApiClient(k8s.MetricsV1Beta1Api);
     this.k8sApi = this.kc.makeApiClient(k8s.CoreV1Api);
     this.k8sMetricsClient = new k8s.Metrics(this.kc);
     this.helmPath = path.resolve(__dirname, '../bin/helm');
@@ -40,7 +38,6 @@ class MetricsService {
       const appsPromises = apps
       .filter(item => item !== null)
       .map(async (app) => {
-        console.log(app.name);
         const appInfo = { name: app.name, cpu: 0, mem: 0, pods: [] };
         topPodsRes.map((pod) => {
           if (pod.Pod.metadata.name.startsWith(app.name)) {
@@ -52,28 +49,7 @@ class MetricsService {
             appInfo.mem += podInfo.mem;
           }
         })
-        console.log(appInfo);
         appsMetrics.push(appInfo);
-        /*
-        const { stdout: manifestOut } = await exec(`${this.helmPath} get manifest ${app.name} --kubeconfig ${k8sConfigFilePath} -n ${nameSpace}`);
-        const manifests = YAML.parseAllDocuments(manifestOut);
-        manifests.forEach((item, index) => {
-          const manifest = item.toJSON();
-          if (manifest!==null && (manifest.kind === "Deployment" || manifest.kind === "DaemonSet" || manifest.kind === "StatefulSet")) {
-            const labels = Object.keys(manifest.spec.selector.matchLabels).map(key => `${key}=${manifest.spec.selector.matchLabels[key]}`).join(",");
-            console.log(labels);
-          }
-        });
-
-        const appInfo = { name: app.name, cpu: 0, mem: 0, pods: [] };
-        await Promise.allSettled(
-          manifests
-            .filter(item => item !== null && (item.kind === "Deployment" || item.kind === "DaemonSet" || item.kind === "StatefulSet"))
-            .map(async (item) => {
-              console.log(`${app.name}--${item.kind}`)
-          })
-        )
-        */
       })
 
       /*
