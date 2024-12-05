@@ -181,6 +181,19 @@ const fetchNamespaceTotalResources = async (clusterid: string, namespace: string
       unknown: number;
     }={pending:0, running:0, succeeded:0, failed:0, unknown:0};
 
+    appChartData.value = [];
+    podChartData.value = [];
+    nsPodNum.value = 0;
+    nsAppNum.value = 0;
+    nsServiceNum.value = 0;
+    nsPvcNum.value = 0;
+    nsDeploymentNum.value = 0;
+    nsDaemonsetNum.value = 0;
+    nsStatefulsetNum.value = 0;
+    nsIngressNum.value = 0;
+    nsConfigmapNum.value = 0;
+    nsSecretNum.value = 0;
+
     setLoading(true);
     const totalResources = await api.getNameSpaceResources(clusterid, namespace);
     totalResources.data.apps.forEach((appMetrics: any)=>{

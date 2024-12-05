@@ -175,7 +175,7 @@ class K8sService {
   
     const podList = await this.getPodList(namespace);
     resources.pods = podList;
-
+    
     return resources
   }
 }

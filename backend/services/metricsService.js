@@ -49,15 +49,24 @@ class MetricsService {
             appInfo.cpu += podInfo.cpu;
             appInfo.mem += podInfo.mem;
           }
-          else {
-            unknownAppInfo.pods.push(podInfo);
-            unknownAppInfo.cpu += podInfo.cpu;
-            unknownAppInfo.mem += podInfo.mem;
-          }
         })
         appsMetrics.push(appInfo);
       })
-      appsMetrics.push(unknownAppInfo);
+
+      topPodsRes.map((pod) => {
+        var matchapp = 0;
+        apps.filter(item => item !== null).map(async (app) => {
+          if (pod.Pod.metadata.name.startsWith(app.name)) matchapp++;
+        })
+        if (matchapp === 0) {
+          const podInfo = { name: pod.Pod.metadata.name, cpu: pod.CPU.CurrentUsage * 1000, mem: Number(pod.Memory.CurrentUsage)/1024/1024 };
+          unknownAppInfo.pods.push(podInfo);
+          unknownAppInfo.cpu += podInfo.cpu;
+          unknownAppInfo.mem += podInfo.mem;
+      }
+      })
+      if (unknownAppInfo.pods.length >0)
+        appsMetrics.push(unknownAppInfo);
 
       result.status = 0;
       result.msg = "ok";
