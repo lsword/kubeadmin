@@ -6,14 +6,13 @@
         </div>
         <div v-else>
           <div v-if="!loading">
-            <a-card>
-              <template #title>概况</template>
+            <a-card :title="$t('clusteroverview.overview')">
               <a-grid :cols="24" :col-gap="16" :row-gap="16" style="margin-top: 16px">
                 <a-grid-item
                   :span="{ xs: 24, sm: 24, md: 24, lg: 8, xl: 8, xxl: 8 }"
                 >
                   <ChainItem
-                    title="应用"
+                    :title="$t('clusteroverview.app')"
                     quota="share"
                     chart-type="pie"
                     class="app-item"

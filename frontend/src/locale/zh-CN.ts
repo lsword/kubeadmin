@@ -4,6 +4,7 @@ import localeLogin from '@/views/login/locale/zh-CN';
 import localeWorkplace from '@/views/dashboard/workplace/locale/zh-CN';
 
 import localeCluster from '@/views/clusterlist/locale/zh-CN';
+import localeClusterOverview from '@/views/clusteroverview/locale/zh-CN';
 
 import localePodlist from '@/views/workload/podlist/locale/zh-CN';
 import localePod from '@/views/workload/pod/locale/zh-CN';
@@ -43,6 +44,16 @@ export default {
   'menu.workload': '工作负载',
   'menu.workload.podlist': 'Pods',
   'menu.workload.deploymentlist': 'Deployments',
+  'menu.service': '服务',
+  'menu.service.servicelist': 'Services',
+  'menu.service.ingresslist': 'Ingresses',
+  'menu.storage': '存储',
+  'menu.storage.pvclist': 'PVCs',
+  'menu.storage.pvlist': 'PVs',
+  'menu.storage.storageclasslist': 'StorageClasses',
+  'menu.configdata': '配置数据',
+  'menu.configdata.configmaplist': 'ConfigMap',
+  'menu.configdata.secretlist': 'Secret',
   'menu.appstore': '应用仓库',
   'menu.helm.applist': '我的应用',
   'menu.helm.app': "MyApp",
@@ -51,6 +62,7 @@ export default {
   ...localeLogin,
   ...localeWorkplace,
   ...localeCluster,
+  ...localeClusterOverview,
   ...localePodlist,
   ...localePod,
   ...localeApplist,

@@ -17,7 +17,7 @@
           show-group-separator
         >
           <template #suffix>
-            <span class="unit">个</span>
+            <span class="unit">{{ $t('clusteroverview.unitname') }}</span>
           </template>
         </a-statistic>
       </a-space>
@@ -38,7 +38,7 @@
           show-group-separator
         >
           <template #suffix>
-            <span class="unit">个</span>
+            <span class="unit">{{ $t('clusteroverview.unitname') }}</span>
           </template>
         </a-statistic>
       </a-space>
@@ -59,7 +59,7 @@
           show-group-separator
         >
           <template #suffix>
-            <span class="unit">个</span>
+            <span class="unit">{{ $t('clusteroverview.unitname') }}</span>
           </template>
         </a-statistic>
       </a-space>
@@ -81,7 +81,7 @@
           show-group-separator
         >
           <template #suffix> 
-            <span class="unit">个</span>
+            <span class="unit">{{ $t('clusteroverview.unitname') }}</span>
           </template>
         </a-statistic>
       </a-space>
@@ -104,7 +104,7 @@
           show-group-separator
         >
           <template #suffix>
-            <span class="unit">个</span>
+            <span class="unit">{{ $t('clusteroverview.unitname') }}</span>
           </template>
         </a-statistic>
       </a-space>
@@ -126,7 +126,7 @@
           show-group-separator
         >
           <template #suffix> 
-            <span class="unit">个</span>
+            <span class="unit">{{ $t('clusteroverview.unitname') }}</span>
           </template>
         </a-statistic>
       </a-space>
@@ -147,7 +147,7 @@
           show-group-separator
         >
           <template #suffix>
-            <span class="unit">个</span>
+            <span class="unit">{{ $t('clusteroverview.unitname') }}</span>
           </template>
         </a-statistic>
       </a-space>
@@ -168,7 +168,7 @@
           animation
         >
           <template #suffix> 
-            <span class="unit">个</span>
+            <span class="unit">{{ $t('clusteroverview.unitname') }}</span>
           </template>
         </a-statistic>
       </a-space>

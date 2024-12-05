@@ -4,6 +4,7 @@ import localeLogin from '@/views/login/locale/en-US';
 import localeWorkplace from '@/views/dashboard/workplace/locale/en-US';
 
 import localeCluster from '@/views/clusterlist/locale/en-US';
+import localeClusterOverview from '@/views/clusteroverview/locale/en-US';
 
 import localePodlist from '@/views/workload/podlist/locale/en-US';
 import localePod from '@/views/workload/pod/locale/en-US';
@@ -44,6 +45,16 @@ export default {
   'menu.workload': 'Workload',
   'menu.workload.podlist': 'Pods',
   'menu.workload.deploymentlist': 'Deployments',
+  'menu.service': 'Service',
+  'menu.service.servicelist': 'Services',
+  'menu.service.ingresslist': 'Ingresses',
+  'menu.storage': 'Storage',
+  'menu.storage.pvclist': 'PVCs',
+  'menu.storage.pvlist': 'PVs',
+  'menu.storage.storageclasslist': 'StorageClasses',
+  'menu.configdata': 'ConfigData',
+  'menu.configdata.configmaplist': 'ConfigMap',
+  'menu.configdata.secretlist': 'Secret',
   'menu.appstore': 'AppStore',
   'menu.helm.applist': 'MyApps',
   'menu.helm.app': "MyApp",
@@ -52,6 +63,7 @@ export default {
   ...localeLogin,
   ...localeWorkplace,
   ...localeCluster,
+  ...localeClusterOverview,
   ...localePodlist,
   ...localePod,
   ...localeApplist,

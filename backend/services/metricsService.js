@@ -32,38 +32,32 @@ class MetricsService {
     try {
       const appsMetrics = [];
       const topPodsRes = await k8s.topPods(this.k8sApi, this.k8sMetricsClient, nameSpace);
-
+      const unknownAppInfo = { name: 'unknown', cpu: 0, mem: 0, pods: [] };
+      const unknownApp = { name: 'unknown', namespace: nameSpace, };
       const { stdout, stderr } = await exec(`${this.helmPath} list --kubeconfig ${k8sConfigFilePath} -n ${nameSpace} -o json`);
       const apps = JSON.parse(stdout);
-      const appsPromises = apps
-      .filter(item => item !== null)
+      apps.push(unknownApp);
+      apps.filter(item => item !== null)
       .map(async (app) => {
         const appInfo = { name: app.name, cpu: 0, mem: 0, pods: [] };
         topPodsRes.map((pod) => {
+          const podInfo = { name: pod.Pod.metadata.name, cpu: 0, mem: 0 };
+          podInfo.cpu = pod.CPU.CurrentUsage * 1000;
+          podInfo.mem = Number(pod.Memory.CurrentUsage)/1024/1024;
           if (pod.Pod.metadata.name.startsWith(app.name)) {
-            const podInfo = { name: pod.Pod.metadata.name, cpu: 0, mem: 0 };
-            podInfo.cpu = pod.CPU.CurrentUsage * 1000;
-            podInfo.mem = Number(pod.Memory.CurrentUsage)/1024/1024;
             appInfo.pods.push(podInfo);
             appInfo.cpu += podInfo.cpu;
             appInfo.mem += podInfo.mem;
           }
+          else {
+            unknownAppInfo.pods.push(podInfo);
+            unknownAppInfo.cpu += podInfo.cpu;
+            unknownAppInfo.mem += podInfo.mem;
+          }
         })
         appsMetrics.push(appInfo);
       })
-
-      /*
-      const podsColumns = topPodsRes.map((pod) => {
-        return {
-            POD: pod.Pod.metadata.name,
-            'CPU(cores)': pod.CPU.CurrentUsage,
-            'MEMORY(bytes)': pod.Memory.CurrentUsage,
-        };
-      });
-      console.log('Top pods');
-      console.table(podsColumns);
-      console.log(topPodsRes1[0].Containers);
-      */
+      appsMetrics.push(unknownAppInfo);
 
       result.status = 0;
       result.msg = "ok";
