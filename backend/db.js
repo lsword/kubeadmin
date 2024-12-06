@@ -44,7 +44,7 @@ const fs = require('fs');
 const logger = require('./utils/logger');
 
 async function kubeadminDB() {
-  const dbPath = path.resolve(__dirname, 'kubeadmin.db');
+  const dbPath = path.resolve(__dirname, 'data', 'kubeadmin.db');
 
   if (!fs.existsSync(dbPath)) {
     fs.writeFileSync(dbPath, '');
