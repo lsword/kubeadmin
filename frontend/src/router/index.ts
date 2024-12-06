@@ -33,6 +33,14 @@ const router = createRouter({
         requiresAuth: false,
       },
     },
+    {
+      path: '/gotocluster/:name',
+      name: 'gotocluster',
+      component: () => import('@/views/gotocluster/index.vue'),
+      meta: {
+        requiresAuth: false,
+      },
+    },
     ...appRoutes,
     REDIRECT_MAIN,
     NOT_FOUND_ROUTE,
