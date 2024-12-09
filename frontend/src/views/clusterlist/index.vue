@@ -37,7 +37,7 @@
         </a-form-item>
         <a-form-item label="集群证书">
           <a-upload
-            action="/api/k8s/upload"
+            action="/kubeadmin/api/k8s/upload"
             :file-list="fileList"
             :limit="1"
             @change="handleFileChange"
