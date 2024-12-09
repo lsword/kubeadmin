@@ -11,7 +11,7 @@ export default mergeConfig(
         strict: true,
       },
       proxy: {
-        '/api/': {
+        '/kubeadmin/api/': {
           target: 'http://127.0.0.1:3000',
           changeOrigin: true,
           secure: false,
@@ -19,6 +19,7 @@ export default mergeConfig(
         },
       },
     },
+    base: "/kubeadmin/",
     plugins: [
       eslint({
         cache: false,

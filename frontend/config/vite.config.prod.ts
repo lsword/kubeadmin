@@ -15,6 +15,7 @@ export default mergeConfig(
       configArcoResolverPlugin(),
       configImageminPlugin(),
     ],
+    base: "/kubeadmin/",
     build: {
       rollupOptions: {
         output: {

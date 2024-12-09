@@ -1,6 +1,8 @@
 // frontend/src/api/cluster.ts
 import axios from 'axios';
 
+const urlPrefix: string = import.meta.env.VITE_API_PREFIX
+
 export interface Cluster {
   id: string;
   name: string;
@@ -20,7 +22,7 @@ export interface AppStore {
 
 // Define the function to call the testConnection API
 export const testConnection = async (data: FormData) => {
-  const resp = await axios.post('/api/k8s/testConnection', data, {
+  const resp = await axios.post(`${urlPrefix}/api/k8s/testConnection`, data, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -29,7 +31,7 @@ export const testConnection = async (data: FormData) => {
 };
 
 export const addCluster = async (data: FormData) => {
-  const resp = await axios.post(`/api/k8s/cluster`, data,
+  const resp = await axios.post(`${urlPrefix}/api/k8s/cluster`, data,
     { 
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -40,67 +42,67 @@ export const addCluster = async (data: FormData) => {
 };
 
 export const getClusters = async() => {
-  const resp = await axios.get(`/api/k8s/clusters`);
+  const resp = await axios.get(`${urlPrefix}/api/k8s/clusters`);
   return resp.data;
 };
 
 const deleteCluster = async (clusterId: string) => {
-  const resp = await axios.delete(`/api/k8s/cluster/${clusterId}`);
+  const resp = await axios.delete(`${urlPrefix}/api/k8s/cluster/${clusterId}`);
   return resp.data;
 };
 
 export const getCluster = async(clusterID: string) => {
   const resp = await axios.get(
-    `/api/k8s/cluster/${clusterID}`
+    `${urlPrefix}/api/k8s/cluster/${clusterID}`
   );
   return resp.data;
 }
 
 export const getNamespaces = async (clusterID: string) => {
   const resp = await axios.get(
-    `/api/k8s/namespaces/${clusterID}`
+    `${urlPrefix}/api/k8s/namespaces/${clusterID}`
   );
   return resp.data;
 }
 
 export const getClusterOverview = async (clusterId: string) => {
-  const resp = await axios.get(`/api/k8s/clusterOverview/${clusterId}`);
+  const resp = await axios.get(`${urlPrefix}/api/k8s/clusterOverview/${clusterId}`);
   return resp.data;
 };
 
 export const getPodList =  async(clusterID: string, nameSpace: string) => {
   const resp = await axios.get(
-    `/api/k8s/pods/${clusterID}/${nameSpace}`
+    `${urlPrefix}/api/k8s/pods/${clusterID}/${nameSpace}`
   );
   return resp.data;
 };
 
 export const getPodDetail = async(clusterID: string, nameSpace: string, podName: string) => {
   const resp = await axios.get(
-    `/api/k8s/pod/${clusterID}/${nameSpace}/${podName}`
+    `${urlPrefix}/api/k8s/pod/${clusterID}/${nameSpace}/${podName}`
   );
   return resp.data;
 };
 
 
 export const getHelmAppList = async (clusterID: string, namespace: string) => {
-  const resp = await axios.get(`/api/helm/apps/${clusterID}/${namespace}`);
+  const resp = await axios.get(`${urlPrefix}/api/helm/apps/${clusterID}/${namespace}`);
   return resp.data;
 };
 
 export const getHelmApp = async (appName: string, clusterID: string, namespace: string) => {
-  const resp = await axios.get(`/api/helm/app/${clusterID}/${namespace}/${appName}`);
+  const resp = await axios.get(`${urlPrefix}/api/helm/app/${clusterID}/${namespace}/${appName}`);
   return resp.data;
 };
 
 export const deleteHelmApp = async (appName: string, clusterID: string, namespace: string) => {
-  const resp = await axios.delete(`/api/helm/app/${clusterID}/${namespace}/${appName}`);
+  const resp = await axios.delete(`${urlPrefix}/api/helm/app/${clusterID}/${namespace}/${appName}`);
   return resp.data;
 };
 
 export const postHelmAppInstall = async (appname: string, chartname: string, chartversion: string, chartrepo: string, clusterid: string, namespace: string, values: string) => {
   const resp = await axios.post(
-    `/api/helm/app`,
+    `${urlPrefix}/api/helm/app`,
     JSON.stringify({
       appname: `${appname}`,
       chartname: `${chartname}`,
@@ -120,12 +122,12 @@ export const postHelmAppInstall = async (appname: string, chartname: string, cha
 }
 
 export const getNameSpaceMetrics = async (clusterID: string, namespace: string) => {
-  const resp = await axios.get(`/api/metrics/namespace/${clusterID}/${namespace}`);
+  const resp = await axios.get(`${urlPrefix}/api/metrics/namespace/${clusterID}/${namespace}`);
   return resp.data;
 };
 
 export const getNameSpaceResources = async (clusterID: string, namespace: string) => {
-  const resp = await axios.get(`/api/k8s/resources/${clusterID}/${namespace}`);
+  const resp = await axios.get(`${urlPrefix}/api/k8s/resources/${clusterID}/${namespace}`);
   return resp.data;
 };
 

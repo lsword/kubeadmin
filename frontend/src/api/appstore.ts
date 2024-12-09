@@ -1,31 +1,33 @@
 import axios from 'axios';
 
+const urlPrefix: string = import.meta.env.VITE_API_PREFIX
+
 const getAppStoreList = async () => {
-  const resp = await axios.get(`/api/appstore/stores`);
+  const resp = await axios.get(`${urlPrefix}/api/appstore/stores`);
   return resp.data;
 };
 
 const getAppStore = async (storeID: string) => {
-  return axios.get(`/api/appstore/store/${storeID}`);
+  return axios.get(`${urlPrefix}/api/appstore/store/${storeID}`);
 };
 
 const getAppStoreAppList = async (appstoreID: string) => {
-  const resp = await axios.get(`/api/appstore/store/apps/${appstoreID}`);
+  const resp = await axios.get(`${urlPrefix}/api/appstore/store/apps/${appstoreID}`);
   return resp.data;
 };
 
 const getAppStoreAppVersions = async (appstoreID: string, chartName: string) => {
-  const resp = await axios.get(`/api/appstore/store/appversions/${appstoreID}/${chartName}`);
+  const resp = await axios.get(`${urlPrefix}/api/appstore/store/appversions/${appstoreID}/${chartName}`);
   return resp.data;
 };
 
 const getAppStoreAppInfo = async (appstoreID: string, chartName: string ,chartVersion: string) => {
-  const resp = await axios.get(`/api/appstore/store/app/${appstoreID}/${chartName}/${chartVersion}`);
+  const resp = await axios.get(`${urlPrefix}/api/appstore/store/app/${appstoreID}/${chartName}/${chartVersion}`);
   return resp.data;
 };
 
 const testAppStoreConnection = async (data: FormData) => {
-  const resp = await axios.post('/api/appstore/store/testConnection', data, {
+  const resp = await axios.post(`${urlPrefix}/api/appstore/store/testConnection`, data, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -34,7 +36,7 @@ const testAppStoreConnection = async (data: FormData) => {
 };
 
 const addAppStore = async (data: FormData) => {
-  const resp = await axios.post(`/api/appstore/store`, data,
+  const resp = await axios.post(`${urlPrefix}/api/appstore/store`, data,
     { 
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -45,7 +47,7 @@ const addAppStore = async (data: FormData) => {
 };
 
 const deleteAppStore = async (appstoreID: string) => {
-  const resp = await axios.delete(`/api/appstore/store/${appstoreID}`);
+  const resp = await axios.delete(`${urlPrefix}/api/appstore/store/${appstoreID}`);
   return resp.data;
 };
 
