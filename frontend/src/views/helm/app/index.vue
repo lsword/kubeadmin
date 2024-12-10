@@ -5,7 +5,7 @@
         <icon-list/>
       </a-breadcrumb-item>
       <a-breadcrumb-item>
-        <a-link href='/helm/applist'>
+        <a-link href='/kubeadmin/helm/applist'>
           {{$t('applist.breadcrumb.applist')}}
         </a-link>
       </a-breadcrumb-item>

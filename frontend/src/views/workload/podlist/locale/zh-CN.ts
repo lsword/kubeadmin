@@ -10,4 +10,5 @@ export default {
   'podlist.table.operation.viewlog': '日志',
   'podlist.table.operation.delete': '删除',
   'podlist.table.operation.forcedelete': '强制删除',
+  'podlist.breadcrumb.workload': '工作负载',
 };

@@ -8,7 +8,8 @@ const getAppStoreList = async () => {
 };
 
 const getAppStore = async (storeID: string) => {
-  return axios.get(`${urlPrefix}/api/appstore/store/${storeID}`);
+  const resp = await axios.get(`${urlPrefix}/api/appstore/store/${storeID}`);
+  return resp.data;
 };
 
 const getAppStoreAppList = async (appstoreID: string) => {

@@ -10,4 +10,5 @@ export default {
   'podlist.table.operation.viewlog': 'ViewLog',
   'podlist.table.operation.delete': 'Delete',
   'podlist.table.operation.forcedelete': 'ForceDelete',
+  'podlist.breadcrumb.workload': 'Workload',
 };

@@ -5,12 +5,12 @@
         <icon-list/>
       </a-breadcrumb-item>
       <a-breadcrumb-item>
-        <a-link href='/appstore/storelist'>
+        <a-link href='/kubeadmin/appstore/storelist'>
           {{$t('storelist.breadcrumb.storelist')}}
         </a-link>
       </a-breadcrumb-item>
       <a-breadcrumb-item v-if="store">
-        <a-link :href="'/appstore/storeapplist/'+storeid">
+        <a-link :href="'/kubeadmin/appstore/storeapplist/'+storeid">
           {{store.name}}
         </a-link>
       </a-breadcrumb-item>

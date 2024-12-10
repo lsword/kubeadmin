@@ -1,5 +1,21 @@
 <template>
   <div class="container">
+    <a-breadcrumb :style="{fontSize: '14px', marginTop: '2px', marginBottom: '8px'}">
+      <a-breadcrumb-item>
+        <icon-list/>
+      </a-breadcrumb-item>
+      <a-breadcrumb-item>
+        {{ $t('pod.breadcrumb.workload') }}
+      </a-breadcrumb-item>
+      <a-breadcrumb-item>
+        <a-link href='/kubeadmin/workload/podlist'>
+          Pods
+        </a-link>
+      </a-breadcrumb-item>
+      <a-breadcrumb-item>
+        {{ podname }}
+      </a-breadcrumb-item>
+    </a-breadcrumb>
     <div class="layout">
       <a-card style="height: auto;"  id="container">
         <a-tabs>

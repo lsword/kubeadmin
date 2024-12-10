@@ -5,4 +5,5 @@ export default {
   'pod.metadata.runtime': '运行时间',
   'pod.metadata.annotations': '注解',
   'pod.metadata.labels': '标签',
+  'pod.breadcrumb.workload': '工作负载',
 };

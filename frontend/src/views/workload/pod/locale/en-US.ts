@@ -5,4 +5,5 @@ export default {
   'pod.metadata.runtime': 'RunTime',
   'pod.metadata.annotations': 'Annotations',
   'pod.metadata.labels': 'Labels',
+  'pod.breadcrumb.workload': 'Workload',
 };
