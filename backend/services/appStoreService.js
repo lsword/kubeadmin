@@ -4,6 +4,11 @@ const fs = require('fs');
 const compressing = require('compressing');
 const { customAlphabet } = require('nanoid');
 const nanoid = customAlphabet('abcdefghigklmnopqrstuvwxyz', 10)
+const http = require('http');
+const https = require('https');
+
+const httpAgent = new http.Agent({ keepAlive: false });
+const httpsAgent = new https.Agent({ keepAlive: false });
 
 class AppStoreService {
   constructor(storeInfo) {
@@ -32,17 +37,37 @@ class AppStoreService {
   }
 
   async listApps() {
-    if (this.store.type === 'chartmuseum') return this.listAppsOfChartmuseum();
+    if (this.store.type === 'chartmuseum') return await this.listAppsOfChartmuseum();
     return this.createResponse(-1, `Unknown store type: ${this.store.type}`);
   }
 
   async listAppsOfChartmuseum() {
     try {
+      
       const response = await axios.get(this.store.address);
+      const keys = Object.keys(response.data);
+
+      for (const key of keys) {
+        if (response.data[key][0].annotations && response.data[key][0].annotations.appicon) {
+          try {
+            const chartDir = await this.getChartmuseumAppPackagePath(response.data[key][0].name, response.data[key][0].version)
+            const chartIcon = fs.readFileSync(chartDir + '/' + response.data[key][0].name + '/' + response.data[key][0].annotations.appicon);
+            if (chartIcon) {
+              response.data[key][0].localicon = Buffer.from(chartIcon).toString('base64');
+              response.data[key][0].icon = "";
+            }
+          } catch(e) {
+          }
+        }
+      };
       return this.createResponse(0, 'ok', response.data);
     } catch (error) {
       return this.createResponse(-1, 'Failed to retrieve charts from ChartMuseum', { error: error.message});
     }
+  }
+
+  async getAppIcon(appname) {
+
   }
 
   async getAppVersions(appname) {
@@ -82,6 +107,7 @@ class AppStoreService {
 
     try {
       const response = await axios.get(chartUrl, {
+        httpAgent,
         responseType: 'arraybuffer'
       })
       const buffer = response.data;
@@ -91,6 +117,7 @@ class AppStoreService {
         await compressing.tgz.uncompress(buffer, tmpDir);
         return tmpDir;
       } catch(error) {
+        console.log(error)
         return null;
       }
     }catch(error) {
