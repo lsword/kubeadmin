@@ -1,6 +1,7 @@
 const axios = require('axios');
 const path = require('path');
 const fs = require('fs');
+const YAML = require('yaml');
 const compressing = require('compressing');
 const { customAlphabet } = require('nanoid');
 const nanoid = customAlphabet('abcdefghigklmnopqrstuvwxyz', 10)
@@ -66,9 +67,58 @@ class AppStoreService {
     }
   }
 
-  async getAppIcon(appname) {
-
+  async getApp(appname, appversion) {
+    if (this.store.type === 'chartmuseum') return await this.getAppOfChartmuseum(appname, appversion);
+    return this.createResponse(-1, `Unknown store type: ${this.store.type}`);
   }
+
+  async getAppOfChartmuseum(appname, appversion) {
+    const chartPackageInfo = {};
+    chartPackageInfo.desc = "";
+    chartPackageInfo.readme = "";
+    chartPackageInfo.values = "";
+    chartPackageInfo.localicon = "";
+  
+    var chartDir = "";
+    try {
+      chartDir = await this.getChartmuseumAppPackagePath(appname, appversion);
+    } catch(e) {
+      return null;
+    }
+    try {
+      chartPackageInfo.readme = fs.readFileSync(path.resolve(chartDir, appname, 'README.md'), 'utf8');
+    }
+    catch (e) {
+      chartPackageInfo.readme = "";
+    }
+    try {
+      chartPackageInfo.values = fs.readFileSync(path.resolve(chartDir, appname, 'values.yaml'), 'utf8');
+    }
+    catch (e) {
+      return null;
+    }
+    try {
+      chartPackageInfo.desc = fs.readFileSync(path.resolve(chartDir, appname, 'Chart.yaml'), 'utf8');
+    }
+    catch (e) {
+      return null;
+    }
+
+    try {
+      const desc = YAML.parse(chartPackageInfo.desc);
+      chartPackageInfo.icon = desc.icon;
+      if (desc.annotations.appicon) {
+        const chartIcon = fs.readFileSync(chartDir + '/' + appname + '/' + desc.annotations.appicon);
+        if (chartIcon) {
+          chartPackageInfo.localicon = Buffer.from(chartIcon).toString('base64');
+        }
+      }
+    } catch(e) {
+      // console.log(e)
+    }
+
+    return chartPackageInfo;
+}
 
   async getAppVersions(appname) {
     if (this.store.type === 'chartmuseum') return this.getChartmuseumAppVersions(appname);
@@ -106,6 +156,7 @@ class AppStoreService {
     const chartUrl = `${this.store.address.replace('/api/', '/')}/${appname}-${appversion}.tgz`;
 
     try {
+      // todo: use axios-retry
       const response = await axios.get(chartUrl, {
         httpAgent,
         responseType: 'arraybuffer'
@@ -117,7 +168,7 @@ class AppStoreService {
         await compressing.tgz.uncompress(buffer, tmpDir);
         return tmpDir;
       } catch(error) {
-        console.log(error)
+        // console.log(error)
         return null;
       }
     }catch(error) {

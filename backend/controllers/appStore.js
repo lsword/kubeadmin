@@ -153,11 +153,6 @@ exports.getAppStoreAppDetail = async (ctx) => {
     return;
   }
   
-  var chartPackageInfo = {};
-  chartPackageInfo.readme = "";
-  chartPackageInfo.values = "";
-  // chartPackageInfo.path = "";
-
   const storeInfo = await getAppStoreById(storeId);
   if (!storeInfo) {
     ctx.body = {
@@ -168,52 +163,22 @@ exports.getAppStoreAppDetail = async (ctx) => {
     return;
   }
 
-  if (storeInfo.type === 'chartmuseum') {
-    // http://store.e-byte.cn/chart/api/test/charts
-    // http://store.e-byte.cn/chart/test/charts/myapp-0.5.0.tgz
-    const chartUrl = `${storeInfo.address.replace('/api/', '/')}/${chartName}-${chartVersion}.tgz`;
-    console.log(chartUrl);
-    await axios.get(chartUrl, {
-      responseType: 'arraybuffer'
-    }).then(async response => {
-      const buffer = response.data;
-  
-      var tmpDir = path.resolve(__dirname, '../tmp/chart', nanoid());
-      fs.mkdirSync(tmpDir, { recursive: true });
-      await compressing.tgz.uncompress(buffer, tmpDir).then(() => {
-        // chartPackageInfo.path = tmpDir + '/' + chartName;
-        try {
-          chartPackageInfo.readme = fs.readFileSync(tmpDir + '/' + chartName + '/README.md', 'utf8');
-        }
-        catch (e) {
-          chartPackageInfo.readme = "";
-        }
-        try {
-          chartPackageInfo.values = fs.readFileSync(tmpDir + '/' + chartName + '/values.yaml', 'utf8');
-        }
-        catch (e) {
-          chartPackageInfo.values = "";
-        }
-      }).catch((error) => {
-        console.log(error);
-      }).finally(()=>{
-        // delte tmp dir
-      });
-    });  
+  const appStoreService = new AppStoreService(storeInfo);
+  const chartPackageInfo = await appStoreService.getApp(chartName, chartVersion);
+  if (!chartPackageInfo) {
+    ctx.body = {
+      code: -1,
+      msg: 'App not found.',
+      data: null  
+    }
+
   } else {
     ctx.body = {
-      code: -1, // Custom error code for connection failure
-      msg: `Store type(${storeId}) does not supported`,
-      data: null,
-    };
-    return;
+      code: 0,
+      msg: 'App stores retrieved successfully.',
+      data: chartPackageInfo  
+    }
   }
-
-  ctx.body = {
-    code: 0,
-    msg: 'App stores retrieved successfully.',
-    data: chartPackageInfo
-  };
 };
 
 exports.testAppStoreConnection = async(ctx) => {

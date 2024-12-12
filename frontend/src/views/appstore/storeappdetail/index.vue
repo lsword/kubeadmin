@@ -24,7 +24,9 @@
     <div class="layout">
       <a-card :style="{ width: '100%' }">
         <a-space>
-          <a-avatar :imageUrl="defaultIcon" :size="64" shape="square" :style="{ marginRight: '8px', backgroundColor: '#FFFFFF' }" />
+          <a-avatar v-if="appLocalIcon !== ''" :imageUrl="'data:image/png;base64,'+ appLocalIcon" :size="64" shape="square" :style="{ marginRight: '8px', backgroundColor: '#FFFFFF' }"/>
+          <a-avatar v-else-if="appIcon !== undefined && appIcon !== ''" :imageUrl="appIcon" :size="64" shape="square" :style="{ marginRight: '8px', backgroundColor: '#FFFFFF' }"></a-avatar>
+          <a-avatar v-else :imageUrl="defaultIcon" :size="64" shape="square" :style="{ marginRight: '8px', backgroundColor: '#FFFFFF' }" />
           <a-space direction="vertical">
             <a-typography-title :heading="5" style="margin-top: 0" v-if="chartname">
               {{ chartname }}
@@ -55,8 +57,8 @@
             <a-card  >
               <ConfigEditor
                 theme="vs-light"
-                :originalConf="defaultValues"
-                :currentConf="installValues"
+                :originalConf="appDefaultValues"
+                :currentConf="appInstallValues"
                 :diffEditor="true"
                 :height="520"
                 @valueChanged="onValueChanged"
@@ -117,8 +119,10 @@ storeid.value = route.params.storeid;
 const store = ref();
 const appInfo = ref();
 const appVersions = ref<any>([]);
-const defaultValues = ref("");
-const installValues = ref("");
+const appDefaultValues = ref("");
+const appInstallValues = ref("");
+const appLocalIcon = ref("");
+const appIcon = ref("");
 const readme = ref("");
 const curVersion = ref("");
 const installModalVisible = ref(false);
@@ -141,7 +145,7 @@ const handleInstallOk = async () => {
   // todo: check install argument
   // todo: i18n
   // appname: string, chartname: string, chartversion: string, chartrepo: string, namespace: string, values: string
-  const installResult:HttpResponse = await postHelmAppInstall(installForm.name, chartname.value, curVersion.value, storeid.value, clusterStore.id!, installForm.namespace, installValues.value);
+  const installResult:HttpResponse = await postHelmAppInstall(installForm.name, chartname.value, curVersion.value, storeid.value, clusterStore.id!, installForm.namespace, appInstallValues.value);
   console.log(installResult);
   if (installResult.code === 20000) {
     Message.success("安装成功！")
@@ -160,7 +164,7 @@ const handleInstallCancel = () => {
 }
 
 const onValueChanged = (value:string) => {
-  installValues.value = value;
+  appInstallValues.value = value;
 }
 
 const fetchAppStore = async () => {
@@ -198,9 +202,11 @@ const fetchAppInfo = async () => {
     if (curVersion.value==='') return;
     const result = await appStoreApi.getAppStoreAppInfo(storeid.value, chartname.value, curVersion.value);
     appInfo.value = result.data;
-    defaultValues.value = appInfo.value.values;
-    installValues.value = appInfo.value.values;
+    appDefaultValues.value = appInfo.value.values;
+    appInstallValues.value = appInfo.value.values;
     readme.value = appInfo.value.readme;
+    appLocalIcon.value = appInfo.value.localicon;
+    appIcon.value = appInfo.value.icon;
   } catch(error) {
     console.error('Failed to fetch app info:', error);
   } finally {

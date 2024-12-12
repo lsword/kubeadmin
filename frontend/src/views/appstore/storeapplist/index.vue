@@ -26,8 +26,8 @@
             <a-card class="card-demo" hoverable @click="handleSelectChart(chart.name)">
               <template #title>{{ chart.name }}</template>
               <span :style="{ display: 'flex', alignItems: 'center'}">
-              <a-avatar v-if="chart.icon !== undefined && chart.icon !== ''" :imageUrl="chart.icon" :size="64" shape="square" :style="{ marginRight: '8px', backgroundColor: '#FFFFFF' }"></a-avatar>
-              <a-avatar v-else-if="chart.localicon !== undefined && chart.localicon !== ''" :imageUrl="'data:image/png;base64,'+ chart.localicon" :size="64" shape="square" :style="{ marginRight: '8px', backgroundColor: '#FFFFFF' }"></a-avatar>
+              <a-avatar v-if="chart.localicon !== undefined && chart.localicon !== ''" :imageUrl="'data:image/png;base64,'+ chart.localicon" :size="64" shape="square" :style="{ marginRight: '8px', backgroundColor: '#FFFFFF' }"></a-avatar>
+              <a-avatar v-else-if="chart.icon !== undefined && chart.icon !== ''" :imageUrl="chart.icon" :size="64" shape="square" :style="{ marginRight: '8px', backgroundColor: '#FFFFFF' }"></a-avatar>
               <a-avatar v-else :imageUrl="defaultIcon" :size="64" shape="square" :style="{ marginRight: '8px', backgroundColor: '#FFFFFF' }"></a-avatar>
                 <p :style="{ margin: 0 }">
                   {{$t('storeapplist.app.releases')}}：{{ chart.releases }}<br/><br/>{{$t('storeapplist.app.lastversion')}}：{{ chart.lastVersion }}
