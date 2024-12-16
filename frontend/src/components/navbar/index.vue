@@ -23,7 +23,7 @@
       <div v-if="!isHomePage">
         <a-divider direction="vertical" />
         <a-space :style="{ color: theme === 'dark' ? '#ffffff' : '#000000' }">
-          {{ $t('navbar.cluster') }}:{{ clusterName }}
+          {{ $t('navbar.cluster') }}:<a-space>{{ clusterName }}</a-space>
         </a-space>
         <a-divider direction="vertical" />
         <a-space :style="{ color: theme === 'dark' ? '#ffffff' : '#000000' }">

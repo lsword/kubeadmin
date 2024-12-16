@@ -137,6 +137,16 @@ class K8sService {
     }
   }
 
+  async getStorageClassList(namespace) {
+    try {
+      const k8sApi = this.kc.makeApiClient(k8s.StorageV1Api);
+      const response = await k8sApi.listStorageClass();
+      return response.body.items;
+    } catch (e) {
+      throw new Error(`Failed to list pvcs: ${error.message}`);
+    }
+  }
+
   async getResources(clusterid, namespace) {
     const resources = {};
     const deploymentList = await this.getDeploymentList(namespace);
