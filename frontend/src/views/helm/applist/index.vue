@@ -79,6 +79,7 @@ const fetchHelmApps = async () => {
     // const currentTime = new Date();
     // const podCreateTime = pod.metadata && pod.metadata.creationTimestamp ? date.formatTimeDiff(new Date(pod.metadata.creationTimestamp),currentTime) : '';
     helmApps.value = result.data;
+
   } catch (error) {
     console.error('Failed to fetch Helm releases:', error);
   }

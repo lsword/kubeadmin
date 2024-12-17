@@ -16,6 +16,40 @@
       </a-breadcrumb-item>
     </a-breadcrumb>
     <div class="layout">
+      <a-card style="height: auto;"  id="container">
+        <a-tabs >
+          <a-tab-pane v-for="apptype in appTypes" :key="apptype" :title="apptype">
+            <a-card :style="{ width: '100%' }">
+              <template v-if="newapps(apptype).length > 0">
+                <a-card-grid
+                  v-for="chart in newapps(apptype)"
+                  :key="chart.name"
+                  :style="{ width: '25%', padding: '16px' }"
+                >
+                  <a-card v-if="apptype != 'all' && chart.apptype === apptype || apptype ==='all'" class="card-demo" hoverable @click="handleSelectChart(chart.name)">
+                    <template #title>{{ chart.name }}</template>
+                    <span :style="{ display: 'flex', alignItems: 'center'}">
+                    <a-avatar v-if="chart.localicon !== undefined && chart.localicon !== ''" :imageUrl="'data:image/png;base64,'+ chart.localicon" :size="64" shape="square" :style="{ marginRight: '8px', backgroundColor: '#FFFFFF' }"></a-avatar>
+                    <a-avatar v-else-if="chart.icon !== undefined && chart.icon !== ''" :imageUrl="chart.icon" :size="64" shape="square" :style="{ marginRight: '8px', backgroundColor: '#FFFFFF' }"></a-avatar>
+                    <a-avatar v-else :imageUrl="defaultIcon" :size="64" shape="square" :style="{ marginRight: '8px', backgroundColor: '#FFFFFF' }"></a-avatar>
+                      <p :style="{ margin: 0 }">
+                        {{$t('storeapplist.app.releases')}}：{{ chart.releases }}<br/><br/>{{$t('storeapplist.app.lastversion')}}：{{ chart.lastVersion }}
+                      </p>
+                    </span>
+                  </a-card>
+                </a-card-grid>
+              </template>
+              <template v-else>
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                  <icon-empty style="font-size: 48px; margin-bottom: 10px;" />
+                  <p style="margin-top: 10px;">暂无数据</p>
+                </div>
+              </template>
+            </a-card>
+          </a-tab-pane>
+        </a-tabs>
+      </a-card>
+      <!--
       <a-card :style="{ width: '100%' }">
         <template v-if="apps.length > 0">
           <a-card-grid
@@ -43,12 +77,13 @@
           </div>
         </template>
       </a-card>
+      -->
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import api from '@/api/appstore';
 import { HttpResponse } from '@/api/http';
@@ -69,6 +104,13 @@ storeid.value = route.params.storeid;
 const store = ref();
 
 const apps = ref<any[]>([]);
+
+const appTypes = ref<string[]>(["all"]);
+
+const newapps = computed(() => (apptype: string) => {
+  if (apptype === "all") return apps.value;
+  return apps.value.filter(app => app.apptype === apptype);
+});
 
 const handleViewAppStore = (record: any) => {
   router.push(`/appstore/storeapplist/${record.id}`);
@@ -104,10 +146,16 @@ const fetchAppStoreApps = async () => {
         lastVersion: data[key][0].version,
         icon: data[key][0].icon,
         localicon: data[key][0].localicon,
+        apptype: data[key][0].annotations.apptype,
+        apptags: data[key][0].annotations.apptags,
+      }
+      if (!appTypes.value.includes(appData.apptype)) {
+        appTypes.value.push(appData.apptype);
       }
       apps.value!.push(appData);
     });
     console.log(apps);
+    
   } catch (error) {
     console.error('Failed to fetch app stores:', error);
   }
