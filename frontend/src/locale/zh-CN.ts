@@ -20,6 +20,8 @@ import localeStoreAppDetail from '@/views/appstore/storeappdetail/locale/zh-CN';
 
 import localeComponentsConfigeditor from '@/components/configeditor/locale/zh-CN';
 
+import localeNodeList from '@/views/node/nodelist/locale/zh-CN';
+
 import localeSettings from './zh-CN/settings';
 
 export default {
@@ -57,6 +59,7 @@ export default {
   'menu.appstore': '应用仓库',
   'menu.helm.applist': '我的应用',
   'menu.helm.app': "MyApp",
+  'menu.node': "主机节点",
   ...localeSettings,
   ...localeMessageBox,
   ...localeLogin,
@@ -71,4 +74,5 @@ export default {
   ...localeStoreAppList,
   ...localeStoreAppDetail,
   ...localeComponentsConfigeditor,
+  ...localeNodeList,
 };

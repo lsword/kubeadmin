@@ -9,7 +9,7 @@ const WORKLOAD: AppRouteRecordRaw = {
     locale: 'menu.storage',
     requiresAuth: true,
     icon: 'icon-storage',
-    order: 7,
+    order: 6,
     title: '存储',
   },
   children: [

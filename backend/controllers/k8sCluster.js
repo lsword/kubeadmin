@@ -582,7 +582,51 @@ exports.getStorageClasses = async (ctx) => {
     ctx.status = 500;
     ctx.body = {
       status: 500,
-      msg: 'Failed to retrieve pods.',
+      msg: 'Failed to retrieve storageclasses.',
+      code: 1014,
+      data: { error: error.message }
+    };
+  }
+};
+
+exports.getNodes = async (ctx) => {
+  const { clusterId } = ctx.params;
+
+  if (!clusterId) {
+    ctx.status = 400;
+    ctx.body = {
+      status: 400,
+      msg: 'Cluster ID are required.',
+      code: 1012,
+      data: null
+    };
+    return;
+  }
+
+  try {
+    const k8sService = await getK8sService(clusterId);
+    if (!k8sService) {
+      ctx.status = 200;
+      ctx.body = {
+        code: -1,
+        msg: 'Cluster not found.',
+        data: null
+      };
+      return;
+    }
+
+    const k8sStorageClasses = await k8sService.getNodeList(clusterId);
+    ctx.body = {
+      status: 200,
+      msg: 'Nodes retrieved successfully.',
+      code: 20000,
+      data: k8sStorageClasses
+    };
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = {
+      status: 500,
+      msg: 'Failed to retrieve nodes.',
       code: 1014,
       data: { error: error.message }
     };

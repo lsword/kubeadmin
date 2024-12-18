@@ -34,6 +34,7 @@
         'cluster': { name: 'cluster.overview'},
         'appstore': { name: 'appstore.storelist'},
         'helm': { name: 'helm.applist'},
+        'node': { name: 'node.nodelist'},
       };
 
       const goto = (item: RouteRecordRaw) => {

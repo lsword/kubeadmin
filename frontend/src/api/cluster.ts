@@ -131,12 +131,13 @@ export const getNameSpaceResources = async (clusterID: string, namespace: string
   return resp.data;
 };
 
-export function getNodeList() {
-  return null;
-}
-
 export const getStorageClassList = async (clusterID: string) => {
   const resp = await axios.get(`${urlPrefix}/api/k8s/storageclasses/${clusterID}`);
+  return resp.data;
+};
+
+export const getNodeList = async (clusterID: string) => {
+  const resp = await axios.get(`${urlPrefix}/api/k8s/nodes/${clusterID}`);
   return resp.data;
 };
 

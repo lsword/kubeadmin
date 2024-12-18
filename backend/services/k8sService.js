@@ -147,6 +147,16 @@ class K8sService {
     }
   }
 
+  async getNodeList() {
+    try {
+      const k8sApi = this.kc.makeApiClient(k8s.CoreV1Api);
+      const response = await k8sApi.listNode();
+      return response.body.items;
+    } catch (e) {
+      throw new Error(`Failed to list pvcs: ${error.message}`);
+    }
+  }
+
   async getResources(clusterid, namespace) {
     const resources = {};
     const deploymentList = await this.getDeploymentList(namespace);

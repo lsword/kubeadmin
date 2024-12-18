@@ -2,14 +2,14 @@ import { DEFAULT_LAYOUT } from '../base';
 import { AppRouteRecordRaw } from '../types';
 
 const WORKLOAD: AppRouteRecordRaw = {
-  path: '/service',
-  name: 'service',
+  path: '/configdata',
+  name: 'configdata',
   component: DEFAULT_LAYOUT,
   meta: {
     locale: 'menu.configdata',
     requiresAuth: true,
     icon: 'icon-book',
-    order: 6,
+    order: 7,
     title: '服务',
   },
   children: [

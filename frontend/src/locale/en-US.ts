@@ -21,6 +21,8 @@ import localeStoreAppDetail from '@/views/appstore/storeappdetail/locale/en-US';
 
 import localeComponentsConfigeditor from '@/components/configeditor/locale/en-US';
 
+import localeNodeList from '@/views/node/nodelist/locale/en-US';
+
 import localeSettings from './en-US/settings';
 
 export default {
@@ -58,6 +60,7 @@ export default {
   'menu.appstore': 'AppStore',
   'menu.helm.applist': 'MyApps',
   'menu.helm.app': "MyApp",
+  'menu.node': "Node",
   ...localeSettings,
   ...localeMessageBox,
   ...localeLogin,
@@ -72,4 +75,5 @@ export default {
   ...localeStoreAppList,
   ...localeStoreAppDetail,
   ...localeComponentsConfigeditor,
+  ...localeNodeList,
 };
