@@ -141,6 +141,22 @@ export const getNodeList = async (clusterID: string) => {
   return resp.data;
 };
 
+export const postServiceType = async(clusterID: string, namespace: string, name: string, type: string) => {
+  return axios.post(
+    `${urlPrefix}/api/k8s/${clusterID}/service/servicetype`,
+    JSON.stringify({
+      namespace,
+      name,
+      type,
+    }),
+    {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+}
+
 export default { 
   testConnection, 
   addCluster, 

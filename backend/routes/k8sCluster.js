@@ -6,6 +6,7 @@ const { uploadFile,
   getNamespacedResources,
   getStorageClasses,
   getNodes,
+  postServiceType,
 } = require('../controllers/k8sCluster');
 
 const router = new Router();
@@ -23,5 +24,6 @@ router.get('/pod/:clusterId/:namespace/:podname', getNamespacedPodDetail);
 router.get('/resources/:clusterId/:namespace', getNamespacedResources);
 router.get('/storageclasses/:clusterId', getStorageClasses);
 router.get('/nodes/:clusterId', getNodes);
+router.post('/:clusterId/service/servicetype', koaBody.default({ multipart: true }), postServiceType);
 
 module.exports = router;

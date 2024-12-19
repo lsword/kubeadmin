@@ -96,7 +96,17 @@ class K8sService {
       throw new Error(`Failed to list services: ${error.message}`);
     }
   }
-  
+
+  async getServiceDetail(namespace, servicename) {
+    try {
+      const k8sApi = this.kc.makeApiClient(k8s.CoreV1Api);
+      const response = await k8sApi.readNamespacedService(servicename, namespace);
+      return response.body;
+    } catch (error) {
+      throw new Error(`Failed to list pods: ${error.message}`);
+    }
+  }
+
   async getIngressList(namespace) {
     try {
       const k8sApi = this.kc.makeApiClient(k8s.NetworkingV1Api);
@@ -154,6 +164,40 @@ class K8sService {
       return response.body.items;
     } catch (e) {
       throw new Error(`Failed to list pvcs: ${error.message}`);
+    }
+  }
+
+  async postServiceType(namespace, servicename, servicetype) {
+    try {
+      const k8sApi = this.kc.makeApiClient(k8s.CoreV1Api);
+      const headers = { 'Content-Type': 'application/merge-patch+json' };
+
+      console.log(namespace, servicename, servicetype)
+      if (servicetype === "NodePort") {
+        const response = await k8sApi.patchNamespacedService(servicename, namespace, { spec: { 'type': "NodePort" } }, undefined, undefined, undefined, undefined, undefined, { headers });
+        console.log(response);
+        return response;
+      } else {
+        const readService = await k8sApi.readNamespacedService(servicename, namespace);
+        const arr = readService.body.spec.ports;
+  
+        for (let i = 0; i < arr.length; i++) {
+          arr[i].nodePort = 0;
+        }
+  
+        const info = {
+          spec: {
+            'ports': arr,
+            'type': "ClusterIP",
+          }
+        };
+  
+        const response = await k8sApi.patchNamespacedService(servicename, namespace, info, undefined, undefined, undefined, undefined, undefined, { headers });
+        console.log(response);
+        return response;
+      }
+    } catch (error) {
+      throw new Error(`Failed to update service type: ${error}`);
     }
   }
 

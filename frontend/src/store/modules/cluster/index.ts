@@ -26,6 +26,7 @@ const useClusterStore = defineStore('cluster', {
     id: loadState('cluster')?.id || undefined,
     name: loadState('cluster')?.name || undefined,
     version: loadState('cluster')?.version || undefined,
+    address: loadState('cluster')?.address || undefined,
     namespaces: loadState('cluster')?.namespaces || undefined,
     curNamespace: loadState('cluster')?.curNamespace || undefined,
   }),

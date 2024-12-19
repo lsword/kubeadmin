@@ -5,6 +5,18 @@ const YAML = require('yaml');
 const { getClusterById, getAppStoreById } = require('../db');
 const { getClusterConfigFile } = require('../utils/k8sConfig');
 const AppStoreService = require('./appStoreService');
+const K8sService = require('../services/k8sService');
+
+getK8sService = async(clusterId) => {
+  try {
+    const cluster = await getClusterById(clusterId);
+    if (!cluster) return null;
+    const k8sService = new K8sService(clusterId, cluster.config);
+    return k8sService;
+  } catch(error) {
+    return null;
+  }
+};
 
 class HelmService {
   constructor(storeInfo) {
@@ -52,10 +64,17 @@ class HelmService {
     try {
       const { stdout } = await exec(`${this.helmPath} get manifest ${appName} --kubeconfig ${k8sConfigFilePath} -n ${nameSpace}`);
       const manifests = YAML.parseAllDocuments(stdout).map(doc => doc.toJSON()).filter(item => item !== null);
-  
+      const k8sService = await getK8sService(clusterId);
+
       for (const item of manifests) {
         if (item === null) continue;
-        resources.push(item);
+        if (item.kind === "Service") {
+          const response = await k8sService.getServiceDetail(nameSpace, item.metadata.name);
+          resources.push(response);
+        }
+        else {
+          resources.push(item);
+        }
       }
       result.status = 0;
       result.msg = "ok";
@@ -81,7 +100,8 @@ class HelmService {
       // const manifests = JSON.parse(stdout).filter(item => item !== null);
       const { stdout } = await exec(`${this.helmPath} get manifest ${appName} --kubeconfig ${k8sConfigFilePath} -n ${nameSpace}`);
       const manifests = YAML.parseAllDocuments(stdout).map(doc => doc.toJSON()).filter(item => item !== null);
-  
+      const k8sService = await getK8sService(clusterId);
+
       for (const item of manifests) {
         if (item === null) continue;
         // console.log(item.kind);
@@ -109,6 +129,7 @@ class HelmService {
           resource.id = `${nameSpace}:${item.kind}:${item.metadata.name}`;
           resource.kind = item.kind;
           // resource.info = await serviceK8s.getServiceByName(ns, item.metadata.name);
+          // resource.info = await k8sService.getServiceDetail(nameSpace, item.metadata.name);
           resource.upstreams = [];
   
           var labels = "";
@@ -126,7 +147,7 @@ class HelmService {
             }
               */
           }
-          resources.push(resource);
+          // resources.push(resource);
         }
         if (item.kind === "Deployment" || item.kind === "DaemonSet" || item.kind === "StatefulSet") {
           resource.id = `${nameSpace}:${item.kind}:${item.metadata.name}`;
