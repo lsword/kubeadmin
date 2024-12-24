@@ -24,13 +24,13 @@ app.use(async (ctx, next) => {
 });
 
 const router = new Router();
-router.use(`${process.env.PREFIX}/api/k8s`, k8sClusterRoutes.routes());
-router.use(`${process.env.PREFIX}/api/appstore`, appStoreRoutes.routes());
-router.use(`${process.env.PREFIX}/api/helm`, helmRoutes.routes());
-router.use(`${process.env.PREFIX}/api/metrics`, metricsRoutes.routes());
+router.use(`/kubeadmin/api/k8s`, k8sClusterRoutes.routes());
+router.use(`/kubeadmin/api/appstore`, appStoreRoutes.routes());
+router.use(`/kubeadmin/api/helm`, helmRoutes.routes());
+router.use(`/kubeadmin/api/metrics`, metricsRoutes.routes());
 app.use(router.routes()).use(router.allowedMethods());
 
-app.use(mount(`${process.env.PREFIX}`, serve(path.join(__dirname, './static'))));
+app.use(mount(`/kubeadmin`, serve(path.join(__dirname, './static'))));
 // app.use(serve(path.join(__dirname, './static')));
 app.use(async (ctx, next) => {
   if (ctx.status === 404 && ctx.method === 'GET') {
