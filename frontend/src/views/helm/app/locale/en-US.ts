@@ -7,4 +7,9 @@ export default {
   'app.table.service.port': 'Port',
   'app.table.service.internaladdress': "InternalAddress",
   'app.table.service.externaladdress': "ExternalAddress",
+  'app.table.pvc.storageClassName': "StorageClassName",
+  'app.table.pvc.accessModes': "AccessModes",
+  'app.table.deployment.replicas': "Replicas",
+  'app.table.deployment.labels': "Labels",
+  'app.table.deployment.images': "Images",
 };

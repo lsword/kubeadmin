@@ -39,8 +39,8 @@
         </a-card>
       </a-col>
     </a-row>
-    <a-card title="服务" :style="{ width: '100%', marginBottom: '20px' }">
-      <a-table :data="serviceData" :loading="loading">
+    <a-card v-if="serviceData.length > 0" title="服务" :style="{ width: '100%', marginBottom: '20px' }">
+      <a-table :data="serviceData" :loading="loading" :pagination="false">
         <template #columns>
           <a-table-column :title="$t('app.table.service.name')" data-index="metadata.name">
           </a-table-column>
@@ -101,6 +101,84 @@
         </template>
       </a-table>
     </a-card>
+    <a-card v-if="deploymentData.length > 0" title="Deployment" :style="{ width: '100%', marginBottom: '20px' }">
+      <a-table :data="deploymentData" :loading="loading" :pagination="false">
+        <template #columns>
+          <a-table-column :title="$t('app.name')" data-index="metadata.name"></a-table-column>
+          <a-table-column :title="$t('app.table.deployment.replicas')">
+            <template #cell="{ record }">
+              <div v-if="record.spec.replicas">
+                {{ record.spec.replicas }}
+              </div>
+              <div v-else>
+                1
+              </div>
+            </template>
+          </a-table-column>
+          <a-table-column :title="$t('app.table.deployment.images')">
+            <template #cell="{ record }">
+              <div v-for="(value, key) in record.spec.template.spec.containers" :key="key">
+                <a-tag bordered>{{ value.image }}</a-tag>
+              </div>
+            </template>
+          </a-table-column>
+            <a-table-column :title="$t('app.table.deployment.labels')">
+              <template #cell="{ record }">
+                <div v-for="(value, key) in record.metadata.labels" :key="key">
+                  <a-tag bordered>{{key}}:{{ value }}</a-tag>
+                </div>
+              </template>
+          </a-table-column>
+        </template>
+      </a-table>
+    </a-card>
+    <a-card v-if="statefulSetData.length > 0" title="StatefulSet" :style="{ width: '100%', marginBottom: '20px' }">
+      <a-table :data="statefulSetData" :loading="loading" :pagination="false">
+        <template #columns>
+          <a-table-column :title="$t('app.name')" data-index="metadata.name"></a-table-column>
+          <a-table-column :title="$t('app.table.deployment.replicas')">
+            <template #cell="{ record }">
+              <div v-if="record.spec.replicas">
+                {{ record.spec.replicas }}
+              </div>
+              <div v-else>
+                1
+              </div>
+            </template>
+          </a-table-column>
+          <a-table-column :title="$t('app.table.deployment.images')">
+            <template #cell="{ record }">
+              <div v-for="(value, key) in record.spec.template.spec.containers" :key="key">
+                <a-tag bordered>{{ value.image }}</a-tag>
+              </div>
+            </template>
+          </a-table-column>
+            <a-table-column :title="$t('app.table.deployment.labels')">
+              <template #cell="{ record }">
+                <div v-for="(value, key) in record.metadata.labels" :key="key">
+                  <a-tag bordered>{{key}}:{{ value }}</a-tag>
+                </div>
+              </template>
+          </a-table-column>
+        </template>
+      </a-table>
+    </a-card>
+    <a-card v-if="pvcData.length > 0" title="PVC" :style="{ width: '100%', marginBottom: '20px' }">
+      <a-table :data="pvcData" :loading="loading" :pagination="false">
+        <template #columns>
+          <a-table-column :title="$t('app.name')" data-index="metadata.name"></a-table-column>
+          <a-table-column :title="$t('app.table.pvc.storageClassName')" data-index="spec.storageClassName"></a-table-column>
+          <a-table-column :title="$t('app.table.pvc.accessModes')">
+            <template #cell="{ record }">
+              <span v-for="(accessMode, index) in record.spec.accessModes" :key="index">
+                {{ accessMode }}
+                <br v-if="index < record.spec.accessModes - 1" />
+              </span>
+            </template>
+          </a-table-column>
+        </template>
+      </a-table>
+    </a-card>
   </div>
 </template>
 
@@ -137,6 +215,10 @@ const props = defineProps({
 const ingressData = ref<any>([]);
 const secretData = ref<any>([]);
 const serviceData = ref<any>([]);
+const deploymentData = ref<any>([]);
+const statefulSetData = ref<any>([]);
+const daemonSetData = ref<any>([]);
+const pvcData = ref<any>([]);
 
 const externalAddr = computed(() => {
   try {
@@ -185,10 +267,20 @@ const fetchHelmApp = async () => {
           secretData.value.push({ data: item.data });
         }
         if (item.kind === 'Service') {
-          console.log(item);
           serviceData.value.push(item);
         }
-
+        if (item.kind === 'PersistentVolumeClaim') {
+          pvcData.value.push(item);
+        }
+        if (item.kind === 'Deployment') {
+          deploymentData.value.push(item);
+        }
+        if (item.kind === 'StatefulSet') {
+          statefulSetData.value.push(item);
+        }
+        if (item.kind === 'DaemonSet') {
+          daemonSetData.value.push(item);
+        }
       })
   } catch (error) {
     console.error('Failed to fetch Helm releases:', error);
@@ -209,6 +301,8 @@ const handleExternalServiceSwitchChange = async(service: any) => {
     ingressData.value = [];
     secretData.value = [];
     serviceData.value = [];
+    pvcData.value = [];
+    deploymentData.value = [];
     await fetchHelmApp();
   } catch (e) {
     console.log(e);
@@ -218,7 +312,7 @@ const handleExternalServiceSwitchChange = async(service: any) => {
 }
 
 clusterStore.$subscribe((mutation, state) => {
-  fetchHelmApp();
+  router.push(`/helm/applist`);
 })
 
 onMounted(() => {

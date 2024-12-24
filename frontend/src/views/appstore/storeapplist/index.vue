@@ -26,7 +26,7 @@
                   :key="chart.name"
                   :style="{ width: '25%', padding: '16px' }"
                 >
-                  <a-card v-if="apptype != 'all' && chart.apptype === apptype || apptype ==='all'" class="card-demo" hoverable @click="handleSelectChart(chart.name)">
+                  <a-card v-if="apptype != 'all' && chart.apptype === apptype || apptype ==='all'" class="card-app" hoverable @click="handleSelectChart(chart.name)">
                     <template #title>{{ chart.name }}</template>
                     <span :style="{ display: 'flex', alignItems: 'center'}">
                     <a-avatar v-if="chart.localicon !== undefined && chart.localicon !== ''" :imageUrl="'data:image/png;base64,'+ chart.localicon" :size="64" shape="square" :style="{ marginRight: '8px', backgroundColor: '#FFFFFF' }"></a-avatar>
@@ -181,4 +181,9 @@ onMounted(() => {
     font-stretch: condensed;
     text-align: center;
   }
+
+  .card-app:hover {
+    cursor: pointer;
+  }
+
 </style>
