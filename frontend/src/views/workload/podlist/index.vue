@@ -56,6 +56,15 @@
         </a-table>
       </a-card>
     </div>
+    <a-modal :visible="showDeleteConfirm" @ok="handleModalDeleteConfirm" @cancel="handleModalDeleteCancel" :title="'确认删除'" >
+      确定要删除名称为{{podToDelete.name}}的这个pod吗？
+    </a-modal>
+    <a-modal :visible="showForceDeleteConfirm" @ok="handleModalForceDeleteConfirm" @cancel="handleModalForceDeleteCancel" :title="'确认强制删除'" >
+      确定要强制删除名称为{{podToDelete.name}}的这个pod吗？
+      <p style="color: red; font-weight: bold;">
+        注意：强制删除可能会有风险，请谨慎操作!
+      </p>
+    </a-modal>
   </div>
 </template>
 
@@ -75,25 +84,15 @@ const { loading, setLoading } = useLoading();
 const clusterStore = useClusterStore();
 
 const k8sPodList = ref<K8sPod[]>();
+const showDeleteConfirm = ref(false); 
+const showForceDeleteConfirm = ref(false);
+const podToDelete = ref<any>({});
 
 const checkStoreData = () => {
   if (!clusterStore.id || !clusterStore.curNamespace) {
     router.push("/");
   }
 }
-
-const handleViewPod = (record: any) => {
-  // router.push(`/workload/pod/${record.name}/${record.controllerName}`);
-  router.push(`/workload/pod/${record.name}`);
-};
-const handleAccess = (record:any) => {
-};
-const handleViewLog = (record:any) => {
-};
-const handleDelete = (record:any) => {
-};
-const handleForceDelete = (record:any) => {
-};
 
 const fetchPodsInNamespace = async () => {
   checkStoreData();
@@ -129,6 +128,45 @@ const fetchPodsInNamespace = async () => {
     console.error('Failed to fetch pods:', error);
   }
   setLoading(false);
+};
+
+const handleViewPod = (record: any) => {
+  // router.push(`/workload/pod/${record.name}/${record.controllerName}`);
+  router.push(`/workload/pod/${record.name}`);
+};
+const handleAccess = (record:any) => {
+};
+const handleViewLog = (record:any) => {
+};
+
+const handleDelete = async (record: { name: any; }) => {
+  podToDelete.value = record; 
+  showDeleteConfirm.value = true;
+}
+
+const handleModalDeleteConfirm = async () => {
+  const result = await api.deletePod(clusterStore.id!, clusterStore.curNamespace!, podToDelete.value.name, "false");
+  showDeleteConfirm.value = false;
+  fetchPodsInNamespace();
+};
+
+const handleModalDeleteCancel = async () => {
+  showDeleteConfirm.value = false;
+};
+
+const handleForceDelete = async (record:any) => {
+  podToDelete.value = record; 
+  showForceDeleteConfirm.value = true;
+}
+
+const handleModalForceDeleteConfirm = async () => {
+  const result = await api.deletePod(clusterStore.id!, clusterStore.curNamespace!, podToDelete.value.name, "true");
+  showForceDeleteConfirm.value = false;
+  fetchPodsInNamespace();
+};
+
+const handleModalForceDeleteCancel = async () => {
+  showForceDeleteConfirm.value = false;
 };
 
 clusterStore.$subscribe((mutation, state) => {

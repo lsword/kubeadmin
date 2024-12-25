@@ -7,6 +7,8 @@ const logger = require('../utils/logger');
 
 const nanoid = customAlphabet('abcdefghigklmnopqrstuvwxyz', 10)
 
+var terminals = {};
+
 getK8sService = async(clusterId) => {
   try {
     const cluster = await getClusterById(clusterId);
@@ -680,3 +682,36 @@ exports.postServiceType = async (ctx) => {
     };
   }
 }  
+
+exports.deletePod = async (ctx) => {
+  const { clusterId, namespace, podName, force } = ctx.params;
+
+  ctx.status = 200;
+  try {
+    const k8sService = await getK8sService(clusterId);
+    const result = await k8sService.deletePod(namespace, podName, force);
+    ctx.body = {
+      code: result.code,
+      msg: result.msg,
+      data: null
+    };
+  } catch (error) {
+    ctx.body = {
+      code: -1,
+      msg: 'deletePod error.',
+      data: { error: error.message }
+    };
+  }
+};
+
+exports.newTerminal = async (ctx) => {
+  const { clusterId, namespace, podName } = ctx.request.body;
+}
+
+exports.resizeTerminal = async (ctx) => {
+  const { terminalId } = ctx.params;
+}
+
+exports.terminal = async (ctx) => {
+  const { terminalId } = ctx.params;
+}

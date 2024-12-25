@@ -242,6 +242,21 @@ class K8sService {
     
     return resources
   }
+
+  async deletePod(namespace, podName, force) {
+    try {
+      const k8sApi = this.kc.makeApiClient(k8s.CoreV1Api);
+      if (force === 'true') {
+        await k8sApi.deleteNamespacedPod(podName, namespace, undefined, undefined, 0, true);
+      }
+      else {
+        await k8sApi.deleteNamespacedPod(podName, namespace);
+      }
+      return { code: 0, msg: `Pod ${podName} deleted successfully.` };
+    } catch (error) {
+      throw new Error(`Failed to delete pod: ${error.message}`);
+    }
+  }
 }
 
 module.exports = K8sService;

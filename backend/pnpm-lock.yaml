@@ -35,6 +35,9 @@ importers:
       koa-static:
         specifier: ^5.0.0
         version: 5.0.0
+      koa-websocket:
+        specifier: ^7.0.0
+        version: 7.0.0
       nanoid:
         specifier: 3.3.4
         version: 3.3.4
@@ -1027,6 +1030,9 @@ packages:
   koa-static@5.0.0:
     resolution: {integrity: sha512-UqyYyH5YEXaJrf9S8E23GoJFQZXkBVJ9zYYMPGz919MSX1KuvAcycIuS0ci150HCoPf4XQVhQ84Qf8xRPWxFaQ==}
     engines: {node: '>= 7.6.0'}
+
+  koa-websocket@7.0.0:
+    resolution: {integrity: sha512-MsHUFKqA4+j+0dpPKWtsvZfnpQ1NcgF+AaTZQZ4B3Xj/cWK31qqmKx9HnA5Gw1LV2aIDzqwy0IDBsZYRurTUAg==}
 
   koa@2.15.3:
     resolution: {integrity: sha512-j/8tY9j5t+GVMLeioLaxweJiKUayFhlGqNTzf2ZGwL0ZCQijd2RLHK0SLW5Tsko8YyyqCZC2cojIb0/s62qTAg==}
@@ -2853,6 +2859,17 @@ snapshots:
       koa-send: 5.0.1
     transitivePeerDependencies:
       - supports-color
+
+  koa-websocket@7.0.0:
+    dependencies:
+      co: 4.6.0
+      debug: 4.3.7(supports-color@5.5.0)
+      koa-compose: 4.1.0
+      ws: 8.18.0
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - utf-8-validate
 
   koa@2.15.3:
     dependencies:

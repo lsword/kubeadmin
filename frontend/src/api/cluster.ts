@@ -157,6 +157,12 @@ export const postServiceType = async(clusterID: string, namespace: string, name:
   );
 }
 
+const deletePod = async (clusterId: string, namespace: string, name: string, force: string) => {
+  const resp = await axios.delete(`${urlPrefix}/api/k8s/pod/${clusterId}/${namespace}/${name}/${force}`);
+  return resp.data;
+};
+
+
 export default { 
   testConnection, 
   addCluster, 
@@ -170,4 +176,5 @@ export default {
   getHelmAppList, 
   getNameSpaceMetrics,
   getNameSpaceResources,
+  deletePod,
  };

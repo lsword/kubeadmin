@@ -1,5 +1,6 @@
 const Koa = require('koa');
 const Router = require('koa-router');
+const websockify = require('koa-websocket');
 const serve = require('koa-static');
 const mount = require('koa-mount');
 const send = require('koa-send');
@@ -10,7 +11,7 @@ const helmRoutes = require('./routes/helm');
 const metricsRoutes = require('./routes/metrics');
 const logger = require('./utils/logger');
 
-const app = new Koa();
+const app = websockify(new Koa());
 
 app.use(async (ctx, next) => {
   logger.info(`Received request: ${ctx.method} ${ctx.url}`);
@@ -29,6 +30,9 @@ router.use(`/kubeadmin/api/appstore`, appStoreRoutes.routes());
 router.use(`/kubeadmin/api/helm`, helmRoutes.routes());
 router.use(`/kubeadmin/api/metrics`, metricsRoutes.routes());
 app.use(router.routes()).use(router.allowedMethods());
+app.ws.use(router.routes()).use(router.allowedMethods());
+//app.use(require('./router/terminal').routes())
+//app.ws.use(require('./router/terminal').routes())
 
 app.use(mount(`/kubeadmin`, serve(path.join(__dirname, './static'))));
 // app.use(serve(path.join(__dirname, './static')));
