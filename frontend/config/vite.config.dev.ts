@@ -11,6 +11,15 @@ export default mergeConfig(
         strict: true,
       },
       proxy: {
+/*
+        '/kubeadmin/api/k8s/terminal': {
+          target: 'ws://127.0.0.1:3000/kubeadmin/api/k8s/terminal',
+          changeOrigin: true,
+          secure: false,
+          ws: true,
+          // rewrite: (path) => path.replace(/^\/upload/, '/upload'), // 可选：重写路径
+        },
+*/
         '/kubeadmin/api/': {
           target: 'http://127.0.0.1:3000',
           changeOrigin: true,

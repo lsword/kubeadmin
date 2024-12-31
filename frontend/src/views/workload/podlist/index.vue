@@ -104,7 +104,7 @@ const fetchPodsInNamespace = async () => {
       const labels = pod.metadata && pod.metadata.labels ? Object.entries(pod.metadata.labels).map(([key, value]) => `${key}:${value}   `) : {};
       const currentTime = new Date();
       const podCreateTime = pod.metadata && pod.metadata.creationTimestamp ? date.formatTimeDiff(new Date(pod.metadata.creationTimestamp),currentTime) : '';
-      const containers = pod.spec.containers.map((container: any) => container.name);
+      const podContainers = pod.spec.containers.map((container: any) => container.name);
       let podStatus = '';
       if (pod.metadata && pod.metadata.deletionTimestamp)
         podStatus = 'Terminating';
@@ -117,9 +117,8 @@ const fetchPodsInNamespace = async () => {
         status: podStatus,
         restart: pod.status && pod.status.containerStatuses && pod.status.containerStatuses[0] ? pod.status.containerStatuses[0].restartCount : 0,
         createTime: podCreateTime,
-        // controllerName: controllerNameOfPod,
         showAllLabels: false,
-        // containers: containers,
+        containers: podContainers,
         podIP: pod.status &&  pod.status.podIP ? pod.status.podIP : '',
       };
       k8sPodList.value!.push(podData);
@@ -131,11 +130,15 @@ const fetchPodsInNamespace = async () => {
 };
 
 const handleViewPod = (record: any) => {
-  // router.push(`/workload/pod/${record.name}/${record.controllerName}`);
   router.push(`/workload/pod/${record.name}`);
 };
 const handleAccess = (record:any) => {
+  const win = window.open(
+    `${import.meta.env.VITE_API_PREFIX}/webshell/${record.name}/${record.containers[0]}`,
+    "_blank"
+  );
 };
+
 const handleViewLog = (record:any) => {
 };
 

@@ -257,6 +257,7 @@ class K8sService {
       throw new Error(`Failed to delete pod: ${error.message}`);
     }
   }
+
 }
 
 module.exports = K8sService;

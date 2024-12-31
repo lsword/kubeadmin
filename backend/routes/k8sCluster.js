@@ -10,7 +10,6 @@ const { uploadFile,
   deletePod,
   newTerminal,
   resizeTerminal,
-  terminal,
 } = require('../controllers/k8sCluster');
 
 const router = new Router();
@@ -30,8 +29,7 @@ router.get('/storageclasses/:clusterId', getStorageClasses);
 router.get('/nodes/:clusterId', getNodes);
 router.post('/:clusterId/service/servicetype', koaBody.default({ multipart: true }), postServiceType);
 router.delete('/pod/:clusterId/:namespace/:podName/:force', deletePod);
-router.post('/terminal', koaBody.default({ multipart: true }), newTerminal);
+router.all('/terminal', newTerminal);
 router.post('/resizeTerminal/:terminalId', resizeTerminal);
-router.all('/terminal/:terminalId', terminal);
 
 module.exports = router;
