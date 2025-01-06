@@ -1,15 +1,13 @@
 <template>
   <div id="terminal">
   </div>
-<!---
-  <div class="select-menu">
+  <div v-if="k8sPod" class="select-menu">
     <a-space direction="vertical" size="large">
     <a-select :style="{width:'140px'}"  v-model="containername"  @change="handleSelectChange">
       <a-option v-for="(value,index) in k8sPod.spec.containers" :key="index">{{value.name}}</a-option>
     </a-select>
     </a-space>
   </div>
-  -->
 </template>
 
 <script setup lang="ts">
@@ -40,11 +38,13 @@ const checkStoreData = () => {
 const route = useRoute();
 const podname = ref();
 const containername = ref();
+const preContainername = ref();
 const k8sPod = ref<K8sPod>();
 const currentTime = new Date();
 
 podname.value = route.params.podname;
-containername.value = route.params.podname;
+containername.value = route.params.containername;
+preContainername.value = route.params.containername;
 
 const termOptions = {
   fontSize: 18,
@@ -127,9 +127,8 @@ const open = () => {
 
   socket.onopen = () => {
     if (socket?.readyState === WebSocket.OPEN) {
-      const initData = JSON.stringify({ type: 'init', clusterid: clusterStore.id!, namespace: clusterStore.curNamespace!, podname: podname.value, containername: undefined });
+      const initData = JSON.stringify({ type: 'init', clusterid: clusterStore.id!, namespace: clusterStore.curNamespace!, podname: podname.value, containername: containername.value });
       sendData(initData);
-console.log("send init data")
 
       fitAddon.fit();
       terminal.focus();
@@ -153,7 +152,13 @@ const onWindowResize = () => {
   fitAddon.fit()
 };
 
-const handleSelectChange = async (value:any) => {
+const handleSelectChange = async (containerName: string) => {
+  console.log(containerName);
+  const win = window.open(
+    `${import.meta.env.VITE_API_PREFIX}/webshell/${podname.value}/${containerName}`,
+    "_blank"
+  );
+  containername.value = preContainername.value;
 };
 
 const fetchPodDetail = async () => {
@@ -162,6 +167,8 @@ const fetchPodDetail = async () => {
   try {
     const result = await api.getPodDetail(clusterStore.id!, clusterStore.curNamespace!, podname.value);
     k8sPod.value = result.data as K8sPod;
+    console.log(k8sPod.value)
+    // containername.value = k8sPod.value.spec.containers[0].name;
   } catch (error) {
     console.error('Failed to fetch pod details:', error);
   }

@@ -712,22 +712,13 @@ exports.newTerminal = async (ctx) => {
   const stdin = new stream.PassThrough();
  
   let exec = undefined;
+  let resizeData = undefined;
 
   const textDecoder = new TextDecoder();
   ctx.websocket.on('message', async (input) => {
     try {
       const data = JSON.parse(textDecoder.decode(input));
-      if (data.type === 'resize') {
-        stdout.rows = data.rows;
-        stdout.columns = data.cols;
-        stdout.emit('resize');
-        stderr.rows = data.rows;
-        stderr.columns = data.cols;
-        stderr.emit('resize');
-        stdin.rows = data.rows;
-        stdin.columns = data.cols;
-        stdin.emit('resize');
-      } else if (data.type === 'init') {
+      if (data.type === 'init') {
         try {
           const cluster = await getClusterById(data.clusterid);
           const kc = new k8s.KubeConfig();
@@ -750,18 +741,45 @@ exports.newTerminal = async (ctx) => {
           );
           stdout.on('data', (data) => ctx.websocket.send(data));
           stderr.on('data', (data) => ctx.websocket.send(data));
+          if (resizeData) {
+            stdout.rows = resizeData.rows;
+            stdout.columns = resizeData.cols;
+            stdout.emit('resize');
+            stderr.rows = resizeData.rows;
+            stderr.columns = resizeData.cols;
+            stderr.emit('resize');
+            stdin.rows = resizeData.rows;
+            stdin.columns = resizeData.cols;
+            stdin.emit('resize');
+  
+          }
         } catch (error) {
           console.log(`Failed to start shell: ${error.message}`)
           ctx.websocket.send(`Failed to start shell: ${error.message}`);
         }
       }
-      else {
+      else if (data.type === 'resize') {
+        resizeData = {};
+        resizeData.cols = data.cols;
+        resizeData.rows = data.rows;
+        if (exec) {
+          console.log("resize exec:", resizeData.cols, resizeData.rows)
+          stdout.rows = resizeData.rows;
+          stdout.columns = resizeData.cols;
+          stdout.emit('resize');
+          stderr.rows = resizeData.rows;
+          stderr.columns = resizeData.cols;
+          stderr.emit('resize');
+          stdin.rows = resizeData.rows;
+          stdin.columns = resizeData.cols;
+          stdin.emit('resize');
+        }
+      } else {
         stdin.write(input); // Append newline character
       }
     } catch (e) {
       stdin.write(input); // Fallback for non-JSON input
     }
- 
   });
 
   ctx.websocket.on('close', () => {
