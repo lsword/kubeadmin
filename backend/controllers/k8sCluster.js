@@ -706,65 +706,62 @@ exports.deletePod = async (ctx) => {
 };
 
 exports.newTerminal = async (ctx) => {
-  console.log('newTerminal')
-  const cluster = await getClusterById("pgdbmducpf");
-  const kc = new k8s.KubeConfig();
-  kc.loadFromString(cluster.config);
-  const exec = new Exec(kc);
-  const k8sApi = kc.makeApiClient(k8s.CoreV1Api);
-  console.log("newTerminal")
-
   const stream = require('stream');
   const stdout = new stream.PassThrough();
   const stderr = new stream.PassThrough();
   const stdin = new stream.PassThrough();
+ 
+  let exec = undefined;
 
-  try {
-    console.log("before exec")
-    exec.exec(
-      "cc-test",
-      "aaa-myapp-nginx-56bbcf6cd8-46b7g",
-      "nginx",
-      ['sh'],
-      stdout,
-      stderr,
-      stdin,
-      true, // tty
-      (status) => {
-        if (status.status !== 'Success') {
-          ctx.websocket.send(`Error: ${status.message}`);
+  const textDecoder = new TextDecoder();
+  ctx.websocket.on('message', async (input) => {
+    try {
+      const data = JSON.parse(textDecoder.decode(input));
+      if (data.type === 'resize') {
+        stdout.rows = data.rows;
+        stdout.columns = data.cols;
+        stdout.emit('resize');
+        stderr.rows = data.rows;
+        stderr.columns = data.cols;
+        stderr.emit('resize');
+        stdin.rows = data.rows;
+        stdin.columns = data.cols;
+        stdin.emit('resize');
+      } else if (data.type === 'init') {
+        try {
+          const cluster = await getClusterById(data.clusterid);
+          const kc = new k8s.KubeConfig();
+          kc.loadFromString(cluster.config);
+          exec = new Exec(kc);
+          exec.exec(
+            data.namespace,
+            data.podname,
+            data.containername, //undefined,
+            ['sh'],
+            stdout,
+            stderr,
+            stdin,
+            true, // tty
+            (status) => {
+              if (status.status !== 'Success') {
+                ctx.websocket.send(`Error: ${status.message}`);
+              }
+            }
+          );
+          stdout.on('data', (data) => ctx.websocket.send(data));
+          stderr.on('data', (data) => ctx.websocket.send(data));
+        } catch (error) {
+          console.log(`Failed to start shell: ${error.message}`)
+          ctx.websocket.send(`Failed to start shell: ${error.message}`);
         }
       }
-    );
-    stdout.on('data', (data) => ctx.websocket.send(data));
-    stderr.on('data', (data) => ctx.websocket.send(data));
-  } catch (error) {
-    console.log(`Failed to start shell: ${error.message}`)
-    ctx.websocket.send(`Failed to start shell: ${error.message}`);
-  }
-
-  stdout.rows = 80;
-  stdout.columns = 130;
-  stdout.emit('resize');
-
-  ctx.websocket.on('message', (input) => {
-    stdin.write(input);
-    /*
-    try {
-      console.log(`"${input.toString()}"`)
-      const data = JSON.parse('{"type":"resize","cols":102,"rows":24}');
-      console.log(data)
-      if (data.type === 'resize') {
-        console.log("before resize")
-        // exec.resize(data.cols, data.rows);
-        console.log("after resize")
-      } else {
+      else {
         stdin.write(input); // Append newline character
       }
     } catch (e) {
       stdin.write(input); // Fallback for non-JSON input
     }
-    */
+ 
   });
 
   ctx.websocket.on('close', () => {

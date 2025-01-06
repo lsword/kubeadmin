@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-// import { Terminal, ITerminalOptions, ITheme, IDisposable } from '@xterm/xterm';
+// import { Terminal, ITerminalOptions, type ITheme, type IDisposable } from '@xterm/xterm';
 // import { FitAddon } from '@xterm/addon-fit';
 // import '@xterm/xterm/css/xterm.css';
 import { Terminal, ITerminalOptions, ITheme, IDisposable } from 'xterm';
@@ -73,11 +73,10 @@ const termOptions = {
     allowProposedApi: true,
 } as ITerminalOptions;
 
-// let terminal:any;
 const terminal = new Terminal(termOptions)
 const fitAddon = new FitAddon();
 
-let socket:any;
+let socket:WebSocket;
 const written = 0;
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
@@ -95,7 +94,8 @@ const sendData = (data: string | Uint8Array) => {
   if (typeof data === 'string') {
     const payload = new Uint8Array(data.length * 3);
     const stats = textEncoder.encodeInto(data, payload);
-    socket.send(payload);
+    socket.send(payload.subarray(0, stats.written as number));
+    console.log(data);
   } else {
     const payload = new Uint8Array(data.length);
     payload.set(data, 0);
@@ -104,19 +104,15 @@ const sendData = (data: string | Uint8Array) => {
 };
 
 const onTerminalData = (data: string) => {
-  if (socket.readyState === WebSocket.OPEN) {
+  if (socket && socket.readyState === WebSocket.OPEN) {
     socket.send(textEncoder.encode(data)); 
   }
 }
-
 const onTerminalResize = (size: { cols: number; rows: number }) => {
- console.log("onTerminalResize", size);
- /*
-  if (socket.readyState === WebSocket.OPEN) {  
-    // socket.send(JSON.stringify({ type: 'resize', cols: size.cols, rows: size.rows }));
-    sendData(JSON.stringify({ type: 'resize', cols: size.cols, rows: size.rows }));
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    const resizeData = JSON.stringify({ type: 'resize', cols: size.cols, rows: size.rows });
+    sendData(resizeData);
   }
-  */
 }
 
 const open = () => {
@@ -124,27 +120,27 @@ const open = () => {
   terminal.onData(onTerminalData);
   terminal.onResize(onTerminalResize);
   terminal.open(document.getElementById("terminal"));
-  fitAddon.fit();
 
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   socket = new WebSocket(`${protocol}//localhost:3000${import.meta.env.VITE_API_PREFIX}/api/k8s/terminal`, ['tty']);
   socket.binaryType = 'arraybuffer';
-  (window as any).term = terminal;
-  (window as any).term.fit = () => {
-    fitAddon.fit();
-  };
 
   socket.onopen = () => {
-    terminal.focus();
-    const dims = fitAddon.proposeDimensions();
-    console.log("dims:", dims);
+    if (socket?.readyState === WebSocket.OPEN) {
+      const initData = JSON.stringify({ type: 'init', clusterid: clusterStore.id!, namespace: clusterStore.curNamespace!, podname: podname.value, containername: undefined });
+      sendData(initData);
+console.log("send init data")
+
+      fitAddon.fit();
+      terminal.focus();
+    }
   }
   socket.onmessage = (event: MessageEvent) => {  
     writeFunc(event.data)
   };
 
   socket.onerror = (error) => {
-    terminal.write(`WebSocket error: ${error.message}\r\n`);
+    terminal.write(`WebSocket error: ${error}\r\n`);
   };
 
   socket.onclose = () => {
@@ -154,7 +150,6 @@ const open = () => {
 }
 
 const onWindowResize = () => {
-  // sendData(JSON.stringify({ type: 'resize', cols: terminal.cols, rows: terminal.rows }));
   fitAddon.fit()
 };
 
