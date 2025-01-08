@@ -724,7 +724,8 @@ exports.newTerminal = async (ctx) => {
           const kc = new k8s.KubeConfig();
           kc.loadFromString(cluster.config);
           exec = new Exec(kc);
-          exec.exec(
+          console.log("namespace:", data.namespace, "podname:", data.podname, "container:", data.containername);
+          a = exec.exec(
             data.namespace,
             data.podname,
             data.containername, //undefined,
@@ -739,6 +740,7 @@ exports.newTerminal = async (ctx) => {
               }
             }
           );
+          console.log("init:", a.handler)
           stdout.on('data', (data) => ctx.websocket.send(data));
           stderr.on('data', (data) => ctx.websocket.send(data));
           if (resizeData) {
@@ -778,7 +780,9 @@ exports.newTerminal = async (ctx) => {
         stdin.write(input); // Append newline character
       }
     } catch (e) {
-      stdin.write(input); // Fallback for non-JSON input
+      // stdin.write(input); // Fallback for non-JSON input
+      console.log("---=====>")
+      stdin.end();
     }
   });
 

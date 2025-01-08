@@ -21,9 +21,9 @@ jobs:
         rm -rf darwin-amd64 helm.tar.gz
 
     - name: Set up Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: '22'  # Ensure this matches your project's Node.js version
+        node-version: '22.1.0'  # Ensure this matches your project's Node.js version
 
     - name: Install and Build Frontend
       working-directory: frontend
