@@ -25,7 +25,7 @@
   import useChartOption from '@/hooks/chart-option';
 
   const barChartOptionsFactory = () => {
-    const data = ref<any>([]);
+    const data = ref<any[]>([]);
     const { chartOption } = useChartOption(() => {
       return {
         grid: {
@@ -45,15 +45,15 @@
           show: true,
           trigger: 'axis',
         },
-        series: {
+        series: [{
           name: 'total',
-          data,
+          data: data.value,
           type: 'bar',
           barWidth: 7,
           itemStyle: {
             borderRadius: 2,
           },
-        },
+        }],
       };
     });
     return {
@@ -117,7 +117,7 @@
   };
 
   const pieChartOptionsFactory = () => {
-    const data = ref<any>([]);
+    const data = ref<any[]>([]);
     const { chartOption } = useChartOption(() => {
       return {
         grid: {
@@ -150,7 +150,7 @@
             label: {
               show: false,
             },
-            data,
+            data:data.value,
           },
         ],
       };
