@@ -53,7 +53,7 @@ class K8sService {
       const response = await k8sApi.readNamespacedPod(podname, namespace);
       return response.body;
     } catch (error) {
-      throw new Error(`Failed to list pods: ${error.message}`);
+      throw new Error(`Failed to read pod: ${error.message}`);
     }
   }
 
@@ -64,6 +64,16 @@ class K8sService {
       return response.body.items;
     } catch (e) {
       throw new Error(`Failed to list deployments: ${error.message}`);
+    }
+  }
+
+  async getDeploymentDetail(namespace, deploymentname) {
+    try {
+      const k8sApi = this.kc.makeApiClient(k8s.AppsV1Api);
+      const response = await k8sApi.readNamespacedDeployment(deploymentname, namespace);
+      return response.body;
+    } catch (error) {
+      throw new Error(`Failed to read deployments ${error.message}`);
     }
   }
 

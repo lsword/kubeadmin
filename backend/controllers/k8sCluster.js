@@ -117,6 +117,7 @@ exports.testConnection = async (ctx) => {
       data: {
         version: clusterInfo.version,
         address: clusterInfo.address,
+        msg: '连接成功',
       }
     };
   }
@@ -498,6 +499,94 @@ exports.getNamespacedPodDetail = async (ctx) => {
     ctx.body = {
       status: 200,
       msg: 'Failed to retrieve pods.',
+      code: -1,
+      data: { error: error.message }
+    };
+  }
+};
+
+//listNamespacedDeployment
+exports.getNamespacedDeployments = async (ctx) => {
+  const { clusterId, namespace } = ctx.params;
+
+  if (!clusterId || !namespace) {
+    ctx.status = 400;
+    ctx.body = {
+      status: 400,
+      msg: 'Cluster ID and namespace are required.',
+      code: 1012,
+      data: null
+    };
+    return;
+  }
+
+  try {
+    const k8sService = await getK8sService(clusterId);
+    if (!k8sService) {
+      ctx.status = 200;
+      ctx.body = {
+        code: -1,
+        msg: 'Cluster not found.',
+        data: null
+      };
+      return;
+    }
+    
+    const deployments = await k8sService.getDeploymentList(namespace);
+    ctx.body = {
+      status: 200,
+      msg: 'Deployments retrieved successfully.',
+      code: 20000,
+      data: deployments
+    };
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = {
+      status: 500,
+      msg: 'Failed to retrieve deployments.',
+      code: 1014,
+      data: { error: error.message }
+    };
+  }
+};
+
+exports.getNamespacedDeploymentDetail = async (ctx) => {
+  const { clusterId, namespace, deploymentName } = ctx.params;
+
+  if (!clusterId || !namespace || !deploymentName) {
+    ctx.status = 400;
+    ctx.body = {
+      status: 400,
+      msg: 'Cluster ID, namespace, and deploymentName are required.',
+      code: 1012,
+      data: null
+    };
+    return;
+  }
+
+  try {
+    const k8sService = await getK8sService(clusterId);
+    if (!k8sService) {
+      ctx.status = 200;
+      ctx.body = {
+        code: -1,
+        msg: 'Cluster not found.',
+        data: null
+      };
+      return;
+    }
+    const deployment = await k8sService.getDeploymentDetail(namespace, deploymentName)      
+    ctx.body = {
+      status: 200,
+      msg: 'Deployment retrieved successfully.',
+      code: 20000,
+      data: deployment
+    };
+  } catch (error) {
+    ctx.status = 200;
+    ctx.body = {
+      status: 200,
+      msg: 'Failed to retrieve deployment.',
       code: -1,
       data: { error: error.message }
     };

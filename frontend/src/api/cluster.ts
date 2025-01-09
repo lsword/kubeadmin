@@ -84,6 +84,19 @@ export const getPodDetail = async(clusterID: string, nameSpace: string, podName:
   return resp.data;
 };
 
+export const getDeploymentList =  async(clusterID: string, nameSpace: string) => {
+  const resp = await axios.get(
+    `${urlPrefix}/api/k8s/deployments/${clusterID}/${nameSpace}`
+  );
+  return resp.data;
+};
+
+export const getDeploymentDetail = async(clusterID: string, nameSpace: string, deploymentName: string) => {
+  const resp = await axios.get(
+    `${urlPrefix}/api/k8s/deployment/${clusterID}/${nameSpace}/${deploymentName}`
+  );
+  return resp.data;
+};
 
 export const getHelmAppList = async (clusterID: string, namespace: string) => {
   const resp = await axios.get(`${urlPrefix}/api/helm/apps/${clusterID}/${namespace}`);
@@ -173,6 +186,8 @@ export default {
   getClusterOverview, 
   getPodList, 
   getPodDetail, 
+  getDeploymentList, 
+  getDeploymentDetail, 
   getHelmAppList, 
   getNameSpaceMetrics,
   getNameSpaceResources,

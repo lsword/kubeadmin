@@ -3,6 +3,7 @@ const koaBody = require('koa-body');
 const { uploadFile, 
   testConnection, addCluster, getClusters, deleteCluster, getCluster, getNamespaces, clusterOverview, 
   getNamespacedPods, getNamespacedPodDetail,
+  getNamespacedDeployments, getNamespacedDeploymentDetail,
   getNamespacedResources,
   getStorageClasses,
   getNodes,
@@ -24,6 +25,8 @@ router.get('/namespaces/:clusterId', getNamespaces);
 router.get('/clusterOverview/:clusterId', clusterOverview); 
 router.get('/pods/:clusterId/:namespace', getNamespacedPods);
 router.get('/pod/:clusterId/:namespace/:podname', getNamespacedPodDetail);
+router.get('/deployments/:clusterId/:namespace', getNamespacedDeployments);
+router.get('/deployment/:clusterId/:namespace/:deploymentName', getNamespacedDeploymentDetail);
 router.get('/resources/:clusterId/:namespace', getNamespacedResources);
 router.get('/storageclasses/:clusterId', getStorageClasses);
 router.get('/nodes/:clusterId', getNodes);

@@ -9,6 +9,9 @@ import localeClusterOverview from '@/views/clusteroverview/locale/zh-CN';
 import localePodlist from '@/views/workload/podlist/locale/zh-CN';
 import localePod from '@/views/workload/pod/locale/zh-CN';
 
+import localeDeploymentlist from '@/views/workload/deploymentlist/locale/zh-CN';
+import localeDeployment from '@/views/workload/deployment/locale/zh-CN';
+
 import localeApplist from '@/views/helm/applist/locale/zh-CN';
 import localeApp from '@/views/helm/app/locale/zh-CN';
 
@@ -68,6 +71,8 @@ export default {
   ...localeClusterOverview,
   ...localePodlist,
   ...localePod,
+  ...localeDeploymentlist,
+  ...localeDeployment,
   ...localeApplist,
   ...localeApp,
   ...localeStorelist,

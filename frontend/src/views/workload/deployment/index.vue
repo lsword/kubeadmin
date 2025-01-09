@@ -5,15 +5,15 @@
         <icon-list/>
       </a-breadcrumb-item>
       <a-breadcrumb-item>
-        {{ $t('pod.breadcrumb.workload') }}
+        {{ $t('deployment.breadcrumb.workload') }}
       </a-breadcrumb-item>
       <a-breadcrumb-item>
-        <a-link href='/kubeadmin/workload/podlist'>
-          Pods
+        <a-link href='/kubeadmin/workload/deploymentlist'>
+          Deployments
         </a-link>
       </a-breadcrumb-item>
       <a-breadcrumb-item>
-        {{ podname }}
+        {{ deploymentname }}
       </a-breadcrumb-item>
     </a-breadcrumb>
     <div class="layout">
@@ -23,18 +23,18 @@
             <template #title><icon-calendar/>概览</template>
             <a-card >
               <a-collapse :default-active-key="['1']"  >
-                <a-collapse-item header="元数据" key="1" v-if="k8sPod">
+                <a-collapse-item header="元数据" key="1" v-if="k8sDeployment">
                   <a-descriptions layout="inline-vertical" :column="5">
-                    <a-descriptions-item :label="$t('pod.metadata.name')">{{ k8sPod.metadata.name }}</a-descriptions-item>
-                    <a-descriptions-item :label="$t('pod.metadata.namespace')">{{ k8sPod.metadata.namespace }}</a-descriptions-item>
-                    <a-descriptions-item :label="$t('pod.metadata.createtime')">{{ new Date(k8sPod.metadata.creationTimestamp).toLocaleDateString() }}</a-descriptions-item>
-                    <a-descriptions-item :label="$t('pod.metadata.runtime')">{{ date.formatTimeDiff(new Date(k8sPod.metadata.creationTimestamp), currentTime) }}</a-descriptions-item>
-                    <a-descriptions-item label="UID">{{ k8sPod.metadata.uid }}</a-descriptions-item>
+                    <a-descriptions-item :label="$t('deployment.metadata.name')">{{ k8sDeployment.metadata.name }}</a-descriptions-item>
+                    <a-descriptions-item :label="$t('deployment.metadata.namespace')">{{ k8sDeployment.metadata.namespace }}</a-descriptions-item>
+                    <a-descriptions-item :label="$t('deployment.metadata.createtime')">{{ new Date(k8sDeployment.metadata.creationTimestamp).toLocaleDateString() }}</a-descriptions-item>
+                    <a-descriptions-item :label="$t('deployment.metadata.runtime')">{{ date.formatTimeDiff(new Date(k8sDeployment.metadata.creationTimestamp), currentTime) }}</a-descriptions-item>
+                    <a-descriptions-item label="UID">{{ k8sDeployment.metadata.uid }}</a-descriptions-item>
                   </a-descriptions>
                   <a-descriptions layout="inline-vertical" :column="1">
-                    <a-descriptions-item :label="$t('pod.metadata.annotations')">
+                    <a-descriptions-item :label="$t('deployment.metadata.annotations')">
                       <a-descriptions :column="1">
-                        <a-descriptions-item v-for="(value, key) in k8sPod.metadata.annotations" :key="key">
+                        <a-descriptions-item v-for="(value, key) in k8sDeployment.metadata.annotations" :key="key">
                           <a-space>
                           <a-tag bordered>{{key}}:{{ value }}</a-tag>
                           <br/>
@@ -42,9 +42,9 @@
                         </a-descriptions-item>
                       </a-descriptions>
                     </a-descriptions-item>
-                    <a-descriptions-item :label="$t('pod.metadata.labels')">
+                    <a-descriptions-item :label="$t('deployment.metadata.labels')">
                       <a-descriptions :column="2">
-                        <a-descriptions-item v-for="(value, key) in k8sPod.metadata.labels" :key="key">
+                        <a-descriptions-item v-for="(value, key) in k8sDeployment.metadata.labels" :key="key">
                           <a-space>
                           <a-tag bordered>{{key}}:{{ value }}</a-tag>
                           <br/>
@@ -69,7 +69,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useClusterStore } from '@/store';
-import api, { K8sPod } from '@/api/cluster';
+import api from '@/api/cluster';
 import useLoading from '@/hooks/loading';
 import date from '@/utils/date';
 
@@ -79,7 +79,7 @@ const { loading, setLoading } = useLoading();
 const clusterStore = useClusterStore();
 const router = useRouter();
 
-const k8sPod = ref<K8sPod>();
+const k8sDeployment = ref<any>();
 const currentTime = new Date();
 
 const checkStoreData = () => {
@@ -89,27 +89,27 @@ const checkStoreData = () => {
 }
 
 const route = useRoute();
-const podname = ref();
-podname.value = route.params.name;
+const deploymentname = ref();
+deploymentname.value = route.params.name;
 
-const fetchPodDetail = async () => {
+const fetchDeploymentDetail = async () => {
   checkStoreData();
 
   try {
-    const result = await api.getPodDetail(clusterStore.id!, clusterStore.curNamespace!, podname.value);
-    k8sPod.value = result.data as K8sPod;
+    const result = await api.getDeploymentDetail(clusterStore.id!, clusterStore.curNamespace!, deploymentname.value);
+    k8sDeployment.value = result.data;
   } catch (error) {
-    console.error('Failed to fetch pod details:', error);
+    console.error('Failed to fetch deployment details:', error);
   }
-  console.log(k8sPod.value)
+  console.log(k8sDeployment.value)
 };
 
 clusterStore.$subscribe((mutation, state) => {
-  router.push("/workload/podlist");
+  router.push("/workload/deploymentlist");
 })
 
 onMounted(() => {
-  fetchPodDetail();
+  fetchDeploymentDetail();
 });
 </script>
 
