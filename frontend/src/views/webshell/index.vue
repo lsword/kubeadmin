@@ -1,5 +1,22 @@
 <template>
-  <div id="terminal">
+  <div v-if="k8sPod" id="terminal">
+  </div>
+  <div v-else>
+    <a-result status="error" title="连接失败">
+    <template #subtitle>
+      <p>
+        当前命名空间({{ clusterStore.curNamespace }})中无法找到Pod({{ podname }})
+      </p>
+      <p>
+        请重新选择需要接入的Pod。
+      </p>
+    </template>
+    <template #extra>
+      <a-space>
+        <a-button type='primary' @click="handleClose">关闭</a-button>
+      </a-space>
+    </template>
+  </a-result>
   </div>
   <div v-if="k8sPod" class="select-menu">
     <a-space direction="vertical" size="large">
@@ -152,6 +169,10 @@ const onWindowResize = () => {
   fitAddon.fit()
 };
 
+const handleClose = () => {
+  window.close()
+}
+
 const handleSelectChange = async (containerName: string) => {
   console.log(containerName);
   const win = window.open(
@@ -166,18 +187,22 @@ const fetchPodDetail = async () => {
 
   try {
     const result = await api.getPodDetail(clusterStore.id!, clusterStore.curNamespace!, podname.value);
+    if (result.code < 0) return false;
     k8sPod.value = result.data as K8sPod;
-    console.log(k8sPod.value)
-    // containername.value = k8sPod.value.spec.containers[0].name;
+    return true;
   } catch (error) {
     console.error('Failed to fetch pod details:', error);
+    return false;
   }
 };
 
-onMounted(() => {
-  fetchPodDetail();
-  open();
-  window.addEventListener('resize', onWindowResize);
+onMounted(async () => {
+  if (await fetchPodDetail()) {
+    open();
+    window.addEventListener('resize', onWindowResize);
+  } else {
+    console.error('Failed to fetch pod details');
+  }
 });
 
 onBeforeUnmount(()=>{

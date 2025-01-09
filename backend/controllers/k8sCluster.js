@@ -486,7 +486,7 @@ exports.getNamespacedPodDetail = async (ctx) => {
       };
       return;
     }
-    const pods = await k8sService.getPodDetail(namespace, podname);
+    const pods = await k8sService.getPodDetail(namespace, podname)      
     ctx.body = {
       status: 200,
       msg: 'Pods retrieved successfully.',
@@ -494,11 +494,11 @@ exports.getNamespacedPodDetail = async (ctx) => {
       data: pods
     };
   } catch (error) {
-    ctx.status = 500;
+    ctx.status = 200;
     ctx.body = {
-      status: 500,
+      status: 200,
       msg: 'Failed to retrieve pods.',
-      code: 1014,
+      code: -1,
       data: { error: error.message }
     };
   }
@@ -780,9 +780,9 @@ exports.newTerminal = async (ctx) => {
         stdin.write(input); // Append newline character
       }
     } catch (e) {
-      // stdin.write(input); // Fallback for non-JSON input
-      console.log("---=====>")
-      stdin.end();
+      stdin.write(input); // Fallback for non-JSON input
+      // console.log("---=====>")
+      // stdin.end();
     }
   });
 

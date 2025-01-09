@@ -26,7 +26,7 @@ const WORKLOAD: AppRouteRecordRaw = {
     },
     {
       path: 'service/:name',
-      name: 'service',
+      name: 'servicedetail',
       component: () => import('@/views/service/servicedetail/index.vue'),
       meta: {
         locale: 'menu.service.servicedetail',
@@ -50,7 +50,7 @@ const WORKLOAD: AppRouteRecordRaw = {
     },
     {
       path: 'ingress/:name',
-      name: 'ingress',
+      name: 'ingressdetail',
       component: () => import('@/views/service/ingressdetail/index.vue'),
       meta: {
         locale: 'menu.service.ingressdetail',
